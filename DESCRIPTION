@@ -1,13 +1,30 @@
 Package: openesm
-Title: What the Package Does (One Line, Title Case)
+Title: Access the Open Experience Sampling Method (OpenESM) Database
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    c(person("Björn S.", "Siepe", 
+    email = "bjoernsiepe@gmail.com", 
+    role = c("aut", "cre", "cph"),
+    comment = c(ORCID = "0000-0002-9558-4648")),
+    person("Matthias", "Kloft",
+    email = "kloft@uni-marburg.de",
+    role = c("aut"),
+    comment = c(ORCID = "0000-0003-1845-6957")))
+Description: Provides programmatic access to the openESM database, a collection
+    of harmonized experience sampling datasets. The package enables researchers 
+    to discover, download, and work with the datasets while ensuring proper 
+    citation and license compliance.  
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Imports:
+    cli (>= 3.6.0),
+    fs,
+    httr2,
+    jsonlite
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+URL: https://github.com/bsiepe/openesm-r
+BugReports: https://github.com/bsiepe/openesm-r/issues

@@ -4,12 +4,25 @@
 \name{openesm-package}
 \alias{openesm}
 \alias{openesm-package}
-\title{openesm: What the Package Does (One Line, Title Case)}
+\title{openesm: Access the Open Experience Sampling Method (OpenESM) Database}
 \description{
-What the package does (one paragraph).
+Provides programmatic access to the openESM database, a collection of harmonized experience sampling datasets. The package enables researchers to discover, download, and work with the datasets while ensuring proper citation and license compliance.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/bsiepe/openesm-r}
+  \item Report bugs at \url{https://github.com/bsiepe/openesm-r/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Björn S. Siepe \email{bjoernsiepe@gmail.com} (\href{https://orcid.org/0000-0002-9558-4648}{ORCID}) [copyright holder]
+
+Authors:
+\itemize{
+  \item Matthias Kloft \email{kloft@uni-marburg.de} (\href{https://orcid.org/0000-0003-1845-6957}{ORCID})
+}
 
 }
 \keyword{internal}
