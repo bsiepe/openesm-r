@@ -61,19 +61,6 @@ msg_success <- function(...) {
   }
 }
 
-#' Format bytes to human readable
-#' @noRd
-format_bytes <- function(bytes) {
-  if (bytes < 1024) {
-    return(paste0(bytes, " B"))
-  } else if (bytes < 1024^2) {
-    return(paste0(round(bytes / 1024, 1), " KB"))
-  } else if (bytes < 1024^3) {
-    return(paste0(round(bytes / 1024^2, 1), " MB"))
-  } else {
-    return(paste0(round(bytes / 1024^3, 2), " GB"))
-  }
-}
 
 #' Read JSON with error handling
 #' @noRd
@@ -91,8 +78,8 @@ read_json_safe <- function(path) {
 
 #' Download file with progress
 #' @noRd
-download_with_progress <- function(url, destfile, quiet = FALSE) {
-  if (!quiet) {
+download_with_progress <- function(url, destfile) {
+  if (is_interactive_cli()) {
     cli::cli_progress_step("Downloading from {.url {url}}")
   }
   
@@ -104,13 +91,13 @@ download_with_progress <- function(url, destfile, quiet = FALSE) {
     # Write to file
     writeBin(httr2::resp_body_raw(response), destfile)
     
-    if (!quiet) {
+    if (is_interactive_cli()) {
       cli::cli_progress_done()
     }
     
     TRUE
   }, error = function(e) {
-    if (!quiet) {
+    if (is_interactive_cli()) {
       cli::cli_progress_done(result = "failed")
     }
     cli::cli_abort(c(
@@ -123,14 +110,21 @@ download_with_progress <- function(url, destfile, quiet = FALSE) {
 
 #' Construct dataset path
 #' @noRd
-get_dataset_path <- function(dataset_id, version, type = c("metadata", "data")) {
+get_cache_path <- function(dataset_id,
+                           version,
+                           filename,
+                           type = c("metadata", "data")) {
   type <- match.arg(type)
-  
-  base_dir <- if (type == "metadata") {
+  base_dir <- if (type == "metadata")
     get_metadata_dir()
-  } else {
+  else
     get_data_dir()
-  }
   
-  file.path(base_dir, "datasets", dataset_id, version)
+  # simplified path
+  path <- fs::path(base_dir, dataset_id, version, filename)
+  
+  # ensure the directory for the file exists before returning the path
+  fs::dir_create(fs::path_dir(path))
+  
+  return(path)
 }
