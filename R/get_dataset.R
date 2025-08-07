@@ -21,61 +21,66 @@
 #' datasets <- get_dataset(c("dataset1", "dataset2"))
 #' }
 #' @export
-get_dataset <- function(dataset_id, version = NULL, cache = TRUE, force_download = FALSE) {
+get_dataset <- function(dataset_id,
+                        version = NULL,
+                        cache = TRUE,
+                        force_download = FALSE) {
+  # use default version if not specified
+  if (is.null(version) || version == "latest") {
+    version <- "latest"
+  } else {
+    cli::cli_abort("Versioning is not yet implemented. Please use 'latest' version for now.")
+  }
   
   # handle multiple datasets
   if (length(dataset_id) > 1) {
     return(get_multiple_datasets(dataset_id, version, cache, force_download, quiet))
   }
   
-  # get metadata (cached if possible)
-  all_datasets <- get_cached_metadata()
-  
-  # find the specific dataset
-  dataset_meta <- all_datasets[all_datasets$dataset == dataset_id, ]
-  if (nrow(dataset_meta) == 0) {
-    cli::cli_abort("Dataset '{dataset_id}' not found. Use {.fn list_datasets} to see available datasets.")
+  # first, get the main catalog of all available datasets
+  all_datasets <- list_datasets()
+  if (!dataset_id %in% all_datasets$dataset_id) {
+    cli::cli_abort("Dataset with id {.val {dataset_id}} not found.")
   }
   
-  # use default version if not specified
-  if (is.null(version)) {
-    version <- "latest"  
+  # get the info for the specific dataset
+  dataset_info <- all_datasets[all_datasets$dataset_id == dataset_id, ]
+  
+  # use the info from the index to find the specific metadata file
+  metadata_gh_path <- dataset_info$path
+  metadata_url <- paste0(
+    "https://raw.githubusercontent.com/your-username/openesm-metadata/main/",
+    metadata_gh_path
+  )
+  metadata_filename <- fs::path_file(metadata_gh_path)
+  
+  # get cache path
+  local_metadata_path <- get_cache_path(dataset_id,
+                                        filename = metadata_filename,
+                                        type = "metadata",
+                                        version = version)
+  
+  if (!fs::file_exists(local_metadata_path)) {
+    download_with_progress(metadata_url, local_metadata_path)
   }
   
-  # construct cache file path
-  data_dir <- get_data_dir()
-  dataset_filename <- paste0(dataset_meta$first_author[1], "_", dataset_id, ".tsv")
-  cache_file <- file.path(data_dir, dataset_filename)
+  specific_meta <- read_json_safe(local_metadata_path)
   
-  # check if we need to download
-  need_download <- force_download || !cache || !file.exists(cache_file)
+  # use the specific metadata to find and download the data file from zenodo
+  # TODO this still needs to be checked with actual metadata fields
+  zenodo_url <- specific_meta$link_to_zenodo
   
-  if (need_download) {
-    # get zenodo download url
-    download_url <- construct_zenodo_download_url(dataset_meta$link_to_zenodo)
-    
-    msg_info("Downloading dataset {dataset_id} ({dataset_meta$first_author[1]} et al., {dataset_meta$year[1]})")
-    
-    # download with progress
-    download_with_progress(download_url, cache_file, quiet = !is_interactive_cli())
-    
-    msg_success("Dataset {dataset_id} downloaded successfully")
-  } else {
-    msg_info("Loading cached dataset {dataset_id}")
+  local_data_path <- get_cache_path(dataset_id, filename = data_filename, type = "data")
+  
+  if (!fs::file_exists(local_data_path)) {
+    download_with_progress(zenodo_url, local_data_path)
   }
   
-  # load the data
-  data <- readr::read_tsv(cache_file, show_col_types = FALSE)
+  # --- FINALIZATION ---
+  msg_success("Loading dataset {.val {dataset_id}}.")
+  data <- readr::read_tsv(local_data_path, show_col_types = FALSE)
   
-  # add metadata as attributes
-  attr(data, "openesm_dataset_id") <- dataset_id
-  attr(data, "openesm_first_author") <- dataset_meta$first_author[1]
-  attr(data, "openesm_year") <- dataset_meta$year[1]
-  attr(data, "openesm_citation") <- dataset_meta$reference_a[1]
-  attr(data, "openesm_doi") <- dataset_meta$paper_doi[1]
-  attr(data, "openesm_version") <- version
-  
-  # set class for S3 methods
+  attr(data, "metadata") <- specific_meta
   class(data) <- c("openesm_dataset", class(data))
   
   return(data)
@@ -100,23 +105,6 @@ get_multiple_datasets <- function(dataset_ids,
   return(result)
 }
 
-# Helper function to get cached metadata
-get_cached_metadata <- function() {
-  metadata_dir <- get_metadata_dir()
-  metadata_file <- file.path(metadata_dir, "datasets.json")
-  
-  # use cached metadata if it exists and is recent (less than 24 hours old)
-  if (file.exists(metadata_file)) {
-    file_age <- difftime(Sys.time(), file.mtime(metadata_file), units = "hours")
-    if (file_age < 24) {
-      metadata <- read_json_safe(metadata_file)
-      return(metadata$datasets)
-    }
-  }
-  
-  # otherwise fetch fresh metadata
-  return(list_datasets(refresh = TRUE))
-}
 
 
 
