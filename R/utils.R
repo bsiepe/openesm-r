@@ -39,25 +39,25 @@ is_interactive_cli <- function() {
 
 #' Create a consistent message format
 #' @noRd
-msg_info <- function(...) {
+msg_info <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
-    cli::cli_alert_info(...)
+    cli::cli_alert_info(..., .envir = .envir)
   }
 }
 
 #' Create a consistent warning format
 #' @noRd
-msg_warn <- function(...) {
+msg_warn <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
-    cli::cli_alert_warning(...)
+    cli::cli_alert_warning(..., .envir = .envir)
   }
 }
 
 #' Create a consistent success format
 #' @noRd
-msg_success <- function(...) {
+msg_success <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
-    cli::cli_alert_success(...)
+    cli::cli_alert_success(..., .envir = .envir)
   }
 }
 

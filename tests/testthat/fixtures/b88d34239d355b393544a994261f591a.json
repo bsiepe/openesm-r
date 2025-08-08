@@ -1,0 +1,68 @@
+{
+  "datasets": [
+    {
+      "dataset_id": "mock_dataset_1",
+      "first_author": "Doe",
+      "year": 2023,
+      "reference_a": "Doe, J. (2023). A mock study.",
+      "reference_b": {},
+      "paper_doi": "10.1234/mock.1",
+      "link_to_zenodo": "https://zenodo.org/mock/1",
+      "link_to_data": "https://osf.io/mock/1",
+      "link_to_codebook": "https://osf.io/mock/cb1",
+      "link_to_code": "https://osf.io/mock/code1",
+      "n_participants": 50,
+      "n_time_points": 100,
+      "n_beeps_per_day": "5",
+      "passive_data_available": "no",
+      "cross_sectional_available": "yes",
+      "topics": "mocking, testing",
+      "implicit_missingness": "no",
+      "raw_time_stamp": "yes",
+      "sampling_scheme": "fixed",
+      "participants": "students",
+      "coding_file": "mock_1_vars",
+      "additional_comments": "This is a test dataset.",
+      "features": [
+        {
+          "name": "var1",
+          "description": "Variable 1"
+        },
+        {
+          "name": "var2",
+          "description": "Variable 2"
+        }
+      ]
+    },
+    {
+      "dataset_id": "mock_dataset_2",
+      "first_author": "Smith",
+      "year": 2024,
+      "reference_a": "Smith, A. (2024). Another mock study.",
+      "reference_b": "A secondary reference.",
+      "paper_doi": "10.1234/mock.2",
+      "link_to_zenodo": {},
+      "link_to_data": "https://osf.io/mock/2",
+      "link_to_codebook": "https://osf.io/mock/cb2",
+      "link_to_code": {},
+      "n_participants": 120,
+      "n_time_points": 200,
+      "n_beeps_per_day": "8",
+      "passive_data_available": "yes",
+      "cross_sectional_available": "no",
+      "topics": "more mocking, more testing",
+      "implicit_missingness": "yes",
+      "raw_time_stamp": "no",
+      "sampling_scheme": "random",
+      "participants": "general population",
+      "coding_file": "mock_2_vars",
+      "additional_comments": {},
+      "features": [
+        {
+          "name": "itemA",
+          "description": "Item A"
+        }
+      ]
+    }
+  ]
+}
