@@ -6,29 +6,30 @@
 #' @param subdir Optional subdirectory within the cache
 #' @return Path to cache directory
 #' @noRd
-get_cache_dir <- function(subdir = NULL) {
-  base_dir <- tools::R_user_dir("openesm", which = "cache")
+get_cache_dir <- function(type) {
+  # user cache directory
+  base_cache <- tools::R_user_dir("openesm", which = "cache")
   
-  if (!is.null(subdir)) {
-    base_dir <- file.path(base_dir, subdir)
-  }
+  cache_dir <- fs::path(base_cache, type)
   
   # ensure directory exists
-  fs::dir_create(base_dir, recurse = TRUE)
+  if (!fs::dir_exists(cache_dir)) {
+    fs::dir_create(cache_dir, recurse = TRUE)
+  }
   
-  return(base_dir)
+  return(cache_dir)
 }
 
 #' Get path to metadata cache
 #' @noRd
 get_metadata_dir <- function() {
-  get_cache_dir("metadata")
+  get_cache_dir(type = "metadata")
 }
 
 #' Get path to data cache
 #' @noRd
 get_data_dir <- function() {
-  get_cache_dir("data")
+  get_cache_dir(type = "data")
 }
 
 #' Check if running in interactive mode with CLI messaging

@@ -11,7 +11,7 @@
 #' @export
 list_datasets <- function(cache_hours = 24) {
   # define the path to the cached master index file
-  index_dir <- get_cache_dir() # gets ~/.cache/R/openesm
+  index_dir <- get_cache_dir(type = "metadata") # gets ~/.cache/R/openesm
   index_path <- file.path(index_dir, "datasets.json")
 
   # determine if we need to download a fresh copy
@@ -27,7 +27,7 @@ list_datasets <- function(cache_hours = 24) {
   if (!use_cache) {
     # otherwise, download a fresh copy
     msg_info("Downloading fresh dataset index from GitHub.")
-    index_url <- "https://raw.githubusercontent.com/bsiepe/openesm-metadata/main/datasets.json"
+    index_url <- "https://raw.githubusercontent.com/bsiepe/openesm-metadata/refs/heads/main/datasets.json"
     download_with_progress(index_url, index_path)
   }
 
@@ -83,7 +83,7 @@ process_raw_datasets_list <- function(raw_list) {
       reference_a = get_val("reference_a"),
       reference_b = get_val("reference_b"),
       paper_doi = get_val("paper_doi"),
-      link_to_zenodo = get_val("link_to_zenodo"),
+      zenodo_doi = get_val("zenodo_doi"),
       link_to_data = get_val("link_to_data"),
       link_to_codebook = get_val("link_to_codebook"),
       link_to_code = get_val("link_to_code"),
