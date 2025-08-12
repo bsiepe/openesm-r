@@ -81,10 +81,8 @@ download_from_zenodo <- function(zenodo_doi,
     dest_path <- filename
   }
 
-  # download file
-  cli::cli_alert_info("Downloading {filename} from Zenodo (version {version})...")
-  curl::curl_download(download_url, destfile = dest_path)
-  cli::cli_alert_success("Downloaded {filename}")
+  # download file using the package's standard download utility
+  download_with_progress(download_url, dest_path)
 
   return(dest_path)
 }

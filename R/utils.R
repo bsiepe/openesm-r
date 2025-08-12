@@ -21,8 +21,70 @@ get_cache_dir <- function(type = NULL) {
   if (!fs::dir_exists(cache_dir)) {
     fs::dir_create(cache_dir, recurse = TRUE)
   }
-  
   return(cache_dir)
+}
+
+#' Display information about the openesm cache
+#'
+#' Shows the location and total size of the local file cache.
+#'
+#' @importFrom cli cli_alert_info
+#' @importFrom fs dir_exists dir_info fs_bytes
+#' @importFrom dplyr summarise pull
+#' @export
+cache_info <- function() {
+  cache_dir <- get_cache_dir()
+  if (!fs::dir_exists(cache_dir)) {
+    cli::cli_alert_info("Cache directory does not exist yet.")
+    cli::cli_alert_info("It will be created at: {.path {cache_dir}}")
+    return(invisible(NULL))
+  }
+
+  dir_contents <- fs::dir_info(cache_dir, recurse = TRUE)
+  total_size <- dplyr::summarise(dir_contents, total = sum(.data$size)) |>
+    dplyr::pull(.data$total)
+
+  cli::cli_alert_info("Cache location: {.path {cache_dir}}")
+  cli::cli_alert_info("Cache size: {.val {fs::fs_bytes(total_size)}}")
+}
+
+#' Clear the openesm cache
+#'
+#' Removes all cached openesm data from your local machine.
+#'
+#' @param force Logical, if TRUE, will not ask for confirmation before deleting.
+#'   Defaults to FALSE.
+#' @importFrom cli cli_abort cli_alert_info cli_alert_success
+#' @importFrom fs dir_exists
+#' @importFrom utils askYesNo
+#' @export
+clear_cache <- function(force = FALSE) {
+  cache_dir <- get_cache_dir()
+  if (!fs::dir_exists(cache_dir)) {
+    cli::cli_alert_info("Cache directory does not exist. Nothing to clear.")
+    return(invisible(NULL))
+  }
+
+  confirmed <- FALSE
+  if (force) {
+    confirmed <- TRUE
+  } else if (interactive()) {
+    cli::cli_alert_info("This will delete all cached data at {.path {cache_dir}}")
+    # use the base R function for confirmation
+    confirmed <- utils::askYesNo("Are you sure you want to proceed?", default = FALSE)
+  } else {
+    cli::cli_abort("Cannot ask for confirmation in a non-interactive session. Use {.code clear_cache(force = TRUE)}.")
+  }
+
+  # askYesNo can return NA if the user cancels, so check specifically for TRUE
+  if (isTRUE(confirmed)) {
+    unlink(cache_dir, recursive = TRUE)
+    cli::cli_alert_success("Cache cleared.")
+  } else {
+    cli::cli_alert_info("Cache not cleared.")
+  }
+
+  return(invisible(NULL))
 }
 
 #' Get path to metadata cache
@@ -134,3 +196,65 @@ get_cache_path <- function(dataset_id,
   
   return(path)
 }
+
+#' Process Specific Dataset Metadata
+#'
+#' Helper function to process the raw list from a specific dataset's
+#' metadata JSON into a clean, one-row tibble.
+#'
+#' @param raw_meta The raw list parsed from the metadata json file.
+#' @return A one-row tibble.
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+#' @noRd
+process_specific_metadata <- function(raw_meta) {
+  # helper to safely get a value, converting NULL or empty list to NA
+  get_val <- function(field, type = "character") {
+    val <- raw_meta[[field]]
+    if (is.null(val) || (is.list(val) && length(val) == 0)) {
+      if (type == "character") return(NA_character_)
+      if (type == "integer") return(NA_integer_)
+      return(NA)
+    }
+    if (is.list(val) || length(val) > 1) {
+      return(paste(val, collapse = ", "))
+    }
+    return(val)
+  }
+
+  # create the nested tibble for features
+  features_tibble <- if (!is.null(raw_meta$features) && length(raw_meta$features) > 0) {
+    dplyr::bind_rows(raw_meta$features)
+  } else {
+    tibble::tibble()
+  }
+
+  # create a clean, one-row tibble of all metadata fields
+  tibble::tibble(
+    dataset_id = get_val("dataset_id"),
+    first_author = get_val("first_author"),
+    year = get_val("year", "integer"),
+    reference_a = get_val("reference_a"),
+    reference_b = get_val("reference_b"),
+    paper_doi = get_val("paper_doi"),
+    zenodo_doi = get_val("zenodo_doi"),
+    license = get_val("license"),
+    link_to_data = get_val("link_to_data"),
+    link_to_codebook = get_val("link_to_codebook"),
+    link_to_code = get_val("link_to_code"),
+    n_participants = get_val("n_participants", "integer"),
+    n_time_points = get_val("n_time_points", "integer"),
+    n_beeps_per_day = get_val("n_beeps_per_day"),
+    passive_data_available = get_val("passive_data_available"),
+    cross_sectional_available = get_val("cross_sectional_available"),
+    topics = get_val("topics"),
+    implicit_missingness = get_val("implicit_missingness"),
+    raw_time_stamp = get_val("raw_time_stamp"),
+    sampling_scheme = get_val("sampling_scheme"),
+    participants = get_val("participants"),
+    coding_file = get_val("coding_file"),
+    additional_comments = get_val("additional_comments"),
+    features = list(features_tibble)
+  )
+}
+
