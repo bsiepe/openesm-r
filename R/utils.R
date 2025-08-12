@@ -30,7 +30,6 @@ get_cache_dir <- function(type = NULL) {
 #'
 #' @importFrom cli cli_alert_info
 #' @importFrom fs dir_exists dir_info fs_bytes
-#' @importFrom dplyr summarise pull
 #' @export
 cache_info <- function() {
   cache_dir <- get_cache_dir()
@@ -39,11 +38,10 @@ cache_info <- function() {
     cli::cli_alert_info("It will be created at: {.path {cache_dir}}")
     return(invisible(NULL))
   }
-
+  
   dir_contents <- fs::dir_info(cache_dir, recurse = TRUE)
-  total_size <- dplyr::summarise(dir_contents, total = sum(.data$size)) |>
-    dplyr::pull(.data$total)
-
+  total_size <- sum(dir_contents$size)
+  
   cli::cli_alert_info("Cache location: {.path {cache_dir}}")
   cli::cli_alert_info("Cache size: {.val {fs::fs_bytes(total_size)}}")
 }

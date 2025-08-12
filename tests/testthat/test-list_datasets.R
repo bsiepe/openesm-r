@@ -11,6 +11,7 @@ create_mock_dataset_json <- function() {
         dataset_id = "0001_test",
         first_author = "Test",
         year = 2022L,
+        license = "CC-BY-4.0", # added license field
         reference_a = "Test et al. (2022)",
         reference_b = "Journal of Test",
         paper_doi = "10.1234/example",
@@ -41,6 +42,7 @@ create_mock_dataset_json <- function() {
         year = 2023L,
         reference_a = "Smith et al. (2023)",
         reference_b = NULL,  # Test NULL handling
+        license = "CC0", # added license field
         paper_doi = "10.5678/example",
         link_to_zenodo = "https://zenodo.org/record/789012",
         link_to_data = NULL,
@@ -71,7 +73,7 @@ test_that("process_raw_datasets_list correctly processes dataset JSON", {
   # basic structure
   expect_s3_class(result, "tbl_df")
   expect_equal(nrow(result), 2)
-  expect_equal(ncol(result), 23)
+  expect_equal(ncol(result), 24) 
   
   # First dataset with complete data
   expect_equal(result$dataset_id[1], "0001_test")

@@ -44,7 +44,8 @@ resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FAL
 #' @param dest_path Character string with destination path
 #' @return Character string with path to downloaded file.
 #' @importFrom zen4R get_versions
-#' @importFrom curl curl_download
+#' @importFrom cli cli_alert_success cli_abort
+#' @export
 download_from_zenodo <- function(zenodo_doi,
                                  dataset_id,
                                  author_name,
