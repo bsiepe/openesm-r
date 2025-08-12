@@ -5,25 +5,34 @@
 #' @param x An object of class `openesm_dataset`.
 #' @param ... Additional arguments passed to `print`.
 #' @return Invisibly returns the original object.
-#' @importFrom cli cli_h1 cli_text cli_alert_info cli_bullets
+#' @importFrom cli cli_h1 cli_text cli_alert_info cli_bullets cli_div
 #' @export
 print.openesm_dataset <- function(x, ...) {
+  # apply a local theme just for this output
+  cli::cli_div(theme = list(
+    span.code = list(
+      color = "blue",
+      "font-style" = "italic",
+      before = "", # remove opening `
+      after = ""   # remove closing `
+    )
+  ))
+
   cli::cli_h1("OpenESM Dataset: {.val {x$dataset_id}}")
 
   meta <- x$metadata
-  
-  safe_val <- function(v) if (is.null(v)) NA_character_ else v
-  
+
   bullets <- c(
-    "*" = "Version: {.val {safe_val(x$version)}}",
-    "*" = "Authors: {safe_val(meta$first_author)} et al. ({safe_val(meta$year)})",
-    "*" = "Paper DOI: {safe_val(meta$paper_doi)}",
-    "*" = "License: {safe_val(meta$license)}",
-    "*" = "Data: A tibble with {safe_val(meta$n_participants)} participants and {safe_val(meta$n_time_points)} maximum time points per participant"
+    "*" = "Version: {.val {x$version}}",
+    "*" = "Authors: {meta$first_author} et al. ({meta$year})",
+    "*" = "Paper DOI: {meta$paper_doi}",
+    "*" = "License: {meta$license}",
+    "*" = "Data: A tibble with {meta$n_participants} participants and {meta$n_time_points} maximum time points per participant"
   )
 
   cli::cli_bullets(bullets)
   cli::cli_alert_info("Use {.code cite(dataset)} for citation information.")
+  cli::cli_alert_info("Use {.code notes(dataset)} for additional information about the dataset.")
   cli::cli_alert_info("Please ensure you follow the license terms for this dataset.")
   invisible(x)
 }
@@ -34,25 +43,35 @@ print.openesm_dataset <- function(x, ...) {
 #' @param x An object of class `openesm_dataset_list`.
 #' @param ... Additional arguments passed to `print`.
 #' @return Invisibly returns the original object.
-#' @importFrom cli cli_h1 cli_text cli_bullets cli_alert_info
+#' @importFrom cli cli_h1 cli_text cli_bullets cli_alert_info cli_div style_bold
 #' @export
 print.openesm_dataset_list <- function(x, ...) {
+  # apply a local theme just for this output
+  cli::cli_div(theme = list(
+    span.code = list(
+      color = "blue",
+      "font-style" = "italic",
+      before = "", # remove opening `
+      after = ""   # remove closing `
+    )
+  ))
+
   num_datasets <- length(x)
   cli::cli_h1("Collection of {num_datasets} OpenESM Dataset{?s}")
 
   # show the names of the first few datasets
   max_show <- 5
   dataset_names <- names(x)
-  
+
   bullets <- paste0("* ", cli::style_bold(dataset_names[1:min(num_datasets, max_show)]))
-  
+
   if (num_datasets > max_show) {
     bullets <- c(bullets, "  ... and {num_datasets - max_show} more.")
   }
-  
+
   cli::cli_bullets(bullets)
   cli::cli_alert_info("Access individual datasets using {.code list_name$dataset_id}")
-  
+
   invisible(x)
 }
 
@@ -101,4 +120,42 @@ cite.openesm_dataset <- function(x, format = "bibtex", ...) {
   
   # Return the combined string invisibly
   return(invisible(full_citation_string))
+}
+
+#' Notes method for openesm_dataset
+#' 
+#' @param x An object of class `openesm_dataset`.
+#' @param ... Additional arguments (not used).
+#' @return A character vector with the notes for the dataset, returned invisibly.
+#' @importFrom cli cli_h1 cli_bullets cli_alert_info
+#' @export
+notes.openesm_dataset <- function(x, ...) {
+  meta <- x$metadata
+  
+  # extract the notes string from the metadata tibble
+  notes_string <- meta$additional_comments
+  
+  # check if the notes string is missing, NA, or empty
+  if (is.null(notes_string) || is.na(notes_string) || !nzchar(trimws(notes_string))) {
+    cli::cli_alert_info("No additional notes available for this dataset.")
+    return(invisible(character(0)))
+  }
+  
+  # split the string by semicolons and trim whitespace from each note
+  notes_vector <- trimws(strsplit(notes_string, ";")[[1]])
+  
+  # filter out any empty strings that might result from trailing semicolons
+  notes_vector <- notes_vector[nzchar(notes_vector)]
+  
+  if (length(notes_vector) == 0) {
+      cli::cli_alert_info("No additional notes available for this dataset.")
+      return(invisible(character(0)))
+  }
+
+  # print the notes using a cli header and bullet points
+  cli::cli_h1("Notes for dataset {.val {x$dataset_id}}")
+  cli::cli_bullets(c("*" = notes_vector))
+  
+  # return the vector of notes invisibly
+  return(invisible(notes_vector))
 }
