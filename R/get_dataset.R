@@ -10,7 +10,6 @@
 #' @param quiet Logical, if TRUE suppresses printing of dataset information (default is FALSE)
 #' @return A data frame with the dataset, or a list of data frames for multiple
 #'   datasets
-#'   
 #' @importFrom cli cli_abort 
 #' @importFrom readr read_tsv
 #' @examples
@@ -40,7 +39,6 @@ get_dataset <- function(dataset_id,
   if (!dataset_id %in% all_datasets$dataset_id) {
     cli::cli_abort("Dataset with id {.val {dataset_id}} not found.")
   }
-  
   # get dataset info
   # remove any NA ids
   all_datasets <- all_datasets[!is.na(all_datasets[["dataset_id"]]), ]
@@ -55,7 +53,6 @@ get_dataset <- function(dataset_id,
     "https://raw.githubusercontent.com/bsiepe/openesm-metadata/main/datasets/",
     metadata_gh_folder, metadata_gh_path
   )
-  
   # cache metadata
   local_metadata_path <- get_cache_path(dataset_id,
                                         filename = metadata_gh_path,
@@ -192,6 +189,7 @@ process_specific_metadata <- function(raw_meta) {
     reference_b = get_val("reference_b"),
     paper_doi = get_val("paper_doi"),
     zenodo_doi = get_val("zenodo_doi"),
+    license = get_val("license"),
     link_to_data = get_val("link_to_data"),
     link_to_codebook = get_val("link_to_codebook"),
     link_to_code = get_val("link_to_code"),
