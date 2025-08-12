@@ -6,6 +6,8 @@
 #' @param cache Logical, if TRUE uses cached version if available (default is TRUE)
 #' @param force_download Logical, if TRUE forces re-download even if cached version exists (
 #'   default is FALSE)
+#' @param sandbox Logical, if TRUE uses Zenodo sandbox for testing (default is FALSE)
+#' #' @param quiet Logical, if TRUE suppresses printing of dataset information (default is FALSE)
 #' @return A data frame with the dataset, or a list of data frames for multiple
 #'   datasets
 #'   
@@ -25,7 +27,8 @@ get_dataset <- function(dataset_id,
                         cache = TRUE,
                         path = NULL,
                         force_download = FALSE,
-                        sandbox = FALSE) {
+                        sandbox = FALSE,
+                        quiet = FALSE) { 
   
   # handle multiple datasets
   if (length(dataset_id) > 1) {
@@ -113,7 +116,12 @@ get_dataset <- function(dataset_id,
     class = "openesm_dataset"
   )
   
-  return(dataset)
+  # explicitly print upon download, unless silenced
+  if (!quiet) {
+    print(dataset)
+  }
+  
+  return(invisible(dataset))
 }
 
 # helper function for multiple datasets
@@ -124,15 +132,23 @@ get_multiple_datasets <- function(dataset_ids,
                                   sandbox) {
   result <- list()
   for (id in dataset_ids) {
+    # call get_dataset in 'quiet' mode to suppress individual prints
     result[[id]] <- get_dataset(
       id,
       version = version,
       cache = cache,
       force_download = force_download,
-      sandbox = sandbox
+      sandbox = sandbox,
+      quiet = TRUE
     )
   }
-  return(result)
+  # assign a special class to the list for custom printing
+  result <- structure(result, class = c("openesm_dataset_list", "list"))
+  
+  # explicitly print the summary for the user
+  print(result)
+  
+  return(invisible(result))
 }
 
 #' Process Specific Dataset Metadata
