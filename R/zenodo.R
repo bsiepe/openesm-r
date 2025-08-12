@@ -13,7 +13,7 @@
 #' @importFrom dplyr arrange desc slice pull
 #' @noRd
 resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FALSE) {
-  data_versions <- zen4R::get_versions(zenodo_doi, sandbox = sandbox)
+  data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
 
   if (nrow(data_versions) == 0) {
     cli::cli_abort("No versions found for DOI {zenodo_doi}")
@@ -53,7 +53,7 @@ download_from_zenodo <- function(zenodo_doi,
                                  dest_path = NULL) {
 
   # get available versions to find the record ID for the specific version
-  data_versions <- zen4R::get_versions(zenodo_doi, sandbox = sandbox)
+  data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
 
   version_match <- data_versions[data_versions$version == version, ]
   if (nrow(version_match) == 0) {
