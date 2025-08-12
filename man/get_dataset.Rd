@@ -10,26 +10,39 @@ get_dataset(
   cache = TRUE,
   path = NULL,
   force_download = FALSE,
-  sandbox = FALSE
+  sandbox = FALSE,
+  quiet = FALSE
 )
 }
 \arguments{
-\item{dataset_id}{Character string or vector of dataset IDs to download}
+\item{dataset_id}{Character string or vector of dataset IDs}
 
-\item{version}{Character string specifying which version to download ("latest" for most recent)}
+\item{version}{Character string specifying the version (default is "latest")}
 
-\item{cache}{Logical, whether to use cached version if available}
+\item{cache}{Logical, if TRUE uses cached version if available (default is TRUE)}
 
-\item{path}{Character string specifying where to save the dataset (uses cache if NULL)}
+\item{path}{Character string specifying the path to save the dataset (default is NULL)}
 
-\item{force_download}{Logical, whether to re-download even if file exists locally}
+\item{force_download}{Logical, if TRUE forces re-download even if cached version exists (
+default is FALSE)}
 
-\item{sandbox}{Logical, whether to use Zenodo sandbox (for package testing only)}
+\item{sandbox}{Logical, if TRUE uses Zenodo sandbox for testing (default is FALSE)}
+
+\item{quiet}{Logical, if TRUE suppresses printing of dataset information (default is FALSE)}
 }
 \value{
-A data frame containing the dataset, or a list of data frames for multiple datasets
+A data frame with the dataset, or a list of data frames for multiple
+datasets
 }
 \description{
-Downloads and loads a dataset from the OpenESM database. Data is retrieved
-from Zenodo and cached locally for future use.
+Get a dataset from OpenESM
+}
+\examples{
+\dontrun{
+# Get a single dataset
+dataset <- get_dataset("example_dataset_id")
+
+# Get multiple datasets
+datasets <- get_dataset(c("dataset1", "dataset2"))
+}
 }

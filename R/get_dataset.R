@@ -7,7 +7,7 @@
 #' @param force_download Logical, if TRUE forces re-download even if cached version exists (
 #'   default is FALSE)
 #' @param sandbox Logical, if TRUE uses Zenodo sandbox for testing (default is FALSE)
-#' #' @param quiet Logical, if TRUE suppresses printing of dataset information (default is FALSE)
+#' @param quiet Logical, if TRUE suppresses printing of dataset information (default is FALSE)
 #' @return A data frame with the dataset, or a list of data frames for multiple
 #'   datasets
 #'   

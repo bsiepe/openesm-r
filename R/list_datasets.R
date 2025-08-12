@@ -6,12 +6,11 @@
 #' @param cache_hours Numeric, number of hours to consider the cache valid (default is 24).
 #' @return A tibble with one row per dataset, including a nested tibble with
 #'   detailed feature information.
-#' @importFrom dplyr bind_rows mutate
-#' @importFrom purrr map
 #' @export
 list_datasets <- function(cache_hours = 24) {
   # define the path to the cached master index file
-  index_dir <- get_cache_dir(type = "metadata") # gets ~/.cache/R/openesm
+  # this file lives in the root of the cache directory
+  index_dir <- get_cache_dir()
   index_path <- file.path(index_dir, "datasets.json")
 
   # determine if we need to download a fresh copy

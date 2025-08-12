@@ -6,11 +6,16 @@
 #' @param subdir Optional subdirectory within the cache
 #' @return Path to cache directory
 #' @noRd
-get_cache_dir <- function(type) {
+get_cache_dir <- function(type = NULL) {
   # user cache directory
   base_cache <- tools::R_user_dir("openesm", which = "cache")
   
-  cache_dir <- fs::path(base_cache, type)
+  # if a type is specified, return the subdirectory
+  if (!is.null(type)) {
+    cache_dir <- fs::path(base_cache, type)
+  } else {
+    cache_dir <- base_cache
+  }
   
   # ensure directory exists
   if (!fs::dir_exists(cache_dir)) {

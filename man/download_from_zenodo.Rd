@@ -8,7 +8,7 @@ download_from_zenodo(
   zenodo_doi,
   dataset_id,
   author_name,
-  version = "latest",
+  version,
   sandbox = FALSE,
   dest_path = NULL
 )
@@ -20,7 +20,7 @@ download_from_zenodo(
 
 \item{author_name}{Character string with author name}
 
-\item{version}{Character string specifying version ("latest" or specific version). Defaults to "latest".}
+\item{version}{Character string specifying a specific version tag (e.g., "v1.0.0").}
 
 \item{sandbox}{Logical, whether to use Zenodo sandbox. Defaults to FALSE. Mainly used for  internal testing}
 
