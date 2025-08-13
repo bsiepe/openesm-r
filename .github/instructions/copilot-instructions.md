@@ -20,8 +20,7 @@ Metadata: JSON from GitHub repo
 ## Coding Rules
 
 - snake_case for everything
-- comments only when logic unclear, always lowercase
-- no fancy metaprogramming
+- inline comments only when logic unclear, always lowercase
 - iterative changes, one function at a time
 - minimal abstractions
 - explicit over clever

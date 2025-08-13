@@ -4,7 +4,7 @@
 \alias{cite.openesm_dataset}
 \title{Cite method for openesm_dataset}
 \usage{
-cite.openesm_dataset(x, format = "bibtex", ...)
+\method{cite}{openesm_dataset}(x, format = "bibtex", ...)
 }
 \arguments{
 \item{x}{An object of class \code{openesm_dataset}.}

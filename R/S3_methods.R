@@ -38,6 +38,7 @@ print.openesm_dataset <- function(x, ...) {
 }
 
 
+
 #' Print method for a list of openesm_dataset objects
 #'
 #' @param x An object of class `openesm_dataset_list`.
@@ -76,12 +77,14 @@ print.openesm_dataset_list <- function(x, ...) {
 }
 
 
+
 #' Cite method for openesm_dataset
 #' 
 #' @param x An object of class `openesm_dataset`.
 #' @param format Character, format for citation (currently only enables "bibtex").
 #' @param ... Additional arguments (not used).
 #' @return A character string with the citation information.
+#' @importFrom cli cli_abort cli_alert_info cli_text cli_code
 #' @export
 cite.openesm_dataset <- function(x, format = "bibtex", ...) {
   if (tolower(format) != "bibtex") {
@@ -108,19 +111,23 @@ cite.openesm_dataset <- function(x, format = "bibtex", ...) {
     return(invisible(NULL))
   }
   
-  # Format the output similar to the base citation() function
+  
   cli::cli_text("To cite this dataset in publications, please use:")
+  cli::cli_text("")  # Empty line
+  
+  # Print each citation as code blocks for better formatting
+  for (i in seq_along(citations)) {
+    if (i > 1) cli::cli_text("") 
+    cli::cli_code(citations[i])
+  }
+  
+  # empty line
+  cli::cli_text("") 
   
   full_citation_string <- paste(citations, collapse = "\n\n")
-  
-  # Print the bibtex string(s) directly to the console
-  cat("\n")
-  cat(full_citation_string)
-  cat("\n")
-  
-  # Return the combined string invisibly
   return(invisible(full_citation_string))
 }
+
 
 #' Notes method for openesm_dataset
 #' 

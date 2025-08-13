@@ -4,7 +4,7 @@
 \alias{notes.openesm_dataset}
 \title{Notes method for openesm_dataset}
 \usage{
-notes.openesm_dataset(x, ...)
+\method{notes}{openesm_dataset}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{openesm_dataset}.}
