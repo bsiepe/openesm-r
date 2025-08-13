@@ -1,5 +1,55 @@
 library(testthat)
 
+test_that("get_cache_path constructs paths and creates directories", {
+  temp_dir <- tempfile("cache")
+  testthat::local_mocked_bindings(
+    get_metadata_dir = function() fs::path(temp_dir, "metadata"),
+    get_data_dir = function() fs::path(temp_dir, "data"),
+    .package = "openesm"
+  )
+  
+  # test metadata path
+  meta_path <- get_cache_path("0001", "v1", "meta.json", type = "metadata")
+  expected_meta_path <- fs::path(temp_dir, "metadata", "0001", "v1", "meta.json")
+  expect_equal(meta_path, expected_meta_path)
+  expect_true(fs::dir_exists(fs::path_dir(meta_path)))
+  
+  # test data path
+  data_path <- get_cache_path("0002", "v2", "data.tsv", type = "data")
+  expected_data_path <- fs::path(temp_dir, "data", "0002", "v2", "data.tsv")
+  expect_equal(data_path, expected_data_path)
+  expect_true(fs::dir_exists(fs::path_dir(data_path)))
+  
+  unlink(temp_dir, recursive = TRUE)
+})
+
+
+test_that("get_cache_dir returns correct paths", {
+  temp_dir <- tempfile("cache")
+  dir.create(temp_dir)
+  
+  testthat::local_mocked_bindings(
+    get_cache_dir = function(type) {
+      if (type == "metadata") {
+        return(fs::path(temp_dir, "metadata"))
+      } else if (type == "data") {
+        return(fs::path(temp_dir, "data"))
+      } else {
+        stop("Unknown cache type")
+      }
+    }
+  )
+  meta_path <- get_cache_dir(type = "metadata")
+  data_path <- get_cache_dir(type = "data")
+  expect_equal(meta_path, fs::path(temp_dir, "metadata"))
+  expect_equal(data_path, fs::path(temp_dir, "data"))
+  expect_equal(get_metadata_dir(), fs::path(temp_dir, "metadata"))
+  expect_equal(get_data_dir(), fs::path(temp_dir, "data"))
+  
+  unlink(temp_dir, recursive = TRUE)
+})
+
+
 test_that("cache_info works when cache exists", {
   # Mock get_cache_dir to point to a controlled temporary directory
   temp_dir <- tempfile("testcache")
@@ -56,4 +106,22 @@ test_that("clear_cache handles non-existent directory gracefully", {
   # Capture output and check for the correct informational message
   output <- cli::cli_fmt(clear_cache(force = TRUE))
   expect_true(any(grepl("Cache directory does not exist", output)))
+})
+
+test_that("read_json_safe handles errors correctly", {
+  # test with a non-existent file, which should trigger an error
+  expect_error(
+    read_json_safe("a_file_that_does_not_exist.json"),
+    "Failed to read JSON file"
+  )
+  
+  # test with a malformed file
+  malformed_file <- tempfile()
+  # write invalid json (single quotes instead of double)
+  writeLines("{'key': 'value'}", malformed_file)
+  expect_error(
+    read_json_safe(malformed_file),
+    "Failed to read JSON file"
+  )
+  unlink(malformed_file)
 })

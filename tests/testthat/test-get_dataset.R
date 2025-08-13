@@ -47,6 +47,21 @@ test_that("get_multiple_datasets works correctly", {
   expect_equal(names(datasets), c("ds1", "ds2"))
 })
 
+test_that("get_multiple_datasets can be called explicitly", {
+  # Mock the actual dataset retrieval
+  testthat::local_mocked_bindings(
+    get_dataset = function(dataset_id, ...) {
+      structure(list(dataset_id = dataset_id), class = "openesm_dataset")
+    }
+  )
+  
+  datasets <- get_multiple_datasets(c("ds1", "ds2"))
+  
+  expect_s3_class(datasets, "openesm_dataset_list")
+  expect_length(datasets, 2)
+  expect_equal(names(datasets), c("ds1", "ds2"))
+})
+
 test_that("get_dataset errors for non-existent dataset", {
   testthat::local_mocked_bindings(
     list_datasets = function() {

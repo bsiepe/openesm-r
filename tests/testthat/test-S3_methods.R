@@ -26,6 +26,9 @@ test_that("print.openesm_dataset_list produces correct output", {
 test_that("cite.openesm_dataset works correctly", {
   mock_dataset <- create_mock_openesm_dataset()
   
+  # test incorrect input
+  expect_error(cli::cli_fmt(cite(mock_dataset, format = "invalid")))
+
   # test the printed output
   output <- cli::cli_fmt(cite(mock_dataset))
   expect_true(any(grepl("To cite this dataset", output)))
@@ -35,6 +38,11 @@ test_that("cite.openesm_dataset works correctly", {
   returned_value <- suppressMessages(cite(mock_dataset))
   expect_type(returned_value, "character")
   expect_match(returned_value, mock_dataset$metadata$reference_a, fixed = TRUE)
+
+  # remove reference_a to test fallback
+  mock_dataset$metadata$reference_a <- NULL
+  output_no_ref <- suppressWarnings(cli::cli_fmt(cite(mock_dataset)))
+  expect_true(any(grepl("No citation", output_no_ref)))
 })
 
 test_that("notes.openesm_dataset works correctly", {
@@ -49,6 +57,11 @@ test_that("notes.openesm_dataset works correctly", {
   expect_type(returned_value, "character")
   expect_length(returned_value, 1)
   expect_match(returned_value, "some individuals have more")
+
+  # test with no notes
+  mock_dataset$metadata$additional_comments <- NULL
+  output_no_notes <- suppressWarnings(cli::cli_fmt(notes(mock_dataset)))
+  expect_true(any(grepl("No additional notes", output_no_notes)))
 })
 
 
