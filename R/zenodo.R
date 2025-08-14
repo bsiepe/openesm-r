@@ -1,5 +1,3 @@
-# Zenodo Integration Functions
-
 #' Resolve a Zenodo version
 #'
 #' Given a concept DOI, finds the specific version tag. If "latest" is requested,
@@ -9,8 +7,10 @@
 #' @param version Character string, either "latest" or a specific version tag (e.g., "v1.0.0").
 #' @param sandbox Logical, whether to use Zenodo sandbox.
 #' @return Character string with the resolved version tag.
+#' @keywords internal
 #' @importFrom zen4R get_versions
 #' @importFrom dplyr arrange desc slice pull
+#' @importFrom cli cli_abort
 #' @noRd
 resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FALSE) {
   data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
@@ -34,18 +34,22 @@ resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FAL
   }
 }
 
-#' Download dataset from Zenodo.
+#' Download dataset from Zenodo
+#'
+#' Downloads a specific dataset file from Zenodo using the record ID and 
+#' constructs the appropriate download URL based on dataset metadata.
 #'
 #' @param zenodo_doi Character string with the Zenodo concept DOI
 #' @param dataset_id Character string with dataset identifier
 #' @param author_name Character string with author name
-#' @param version Character string specifying a specific version tag (e.g., "v1.0.0").
-#' @param sandbox Logical, whether to use Zenodo sandbox. Defaults to FALSE. Mainly used for  internal testing
-#' @param dest_path Character string with destination path
-#' @return Character string with path to downloaded file.
+#' @param version Character string specifying a specific version tag (e.g., "1.0.0")
+#' @param sandbox Logical, whether to use Zenodo sandbox. Default is \code{FALSE}
+#' @param dest_path Character string with destination path. If \code{NULL}, uses filename only
+#' @return Character string with path to downloaded file
+#' @keywords internal
 #' @importFrom zen4R get_versions
-#' @importFrom cli cli_alert_success cli_abort
-#' @export
+#' @importFrom cli cli_abort
+#' @noRd
 download_from_zenodo <- function(zenodo_doi,
                                  dataset_id,
                                  author_name,

@@ -10,7 +10,7 @@ Print method for openesm_dataset}
 \arguments{
 \item{x}{An object of class \code{openesm_dataset}.}
 
-\item{...}{Additional arguments passed to \code{print}.}
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
 Invisibly returns the original object.
@@ -18,4 +18,10 @@ Invisibly returns the original object.
 \description{
 S3 Methods for openesm objects
 Print method for openesm_dataset
+}
+\examples{
+\dontrun{
+dataset <- get_dataset("0001")
+print(dataset)
+}
 }

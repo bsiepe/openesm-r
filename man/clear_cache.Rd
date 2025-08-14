@@ -7,9 +7,21 @@
 clear_cache(force = FALSE)
 }
 \arguments{
-\item{force}{Logical, if TRUE, will not ask for confirmation before deleting.
-Defaults to FALSE.}
+\item{force}{Logical. If \code{TRUE}, will not ask for confirmation before
+deleting. Default is \code{FALSE}.}
+}
+\value{
+Invisibly returns \code{NULL}.
 }
 \description{
 Removes all cached openesm data from your local machine.
+}
+\examples{
+\dontrun{
+# clear cache with confirmation prompt
+clear_cache()
+
+# force clear without confirmation
+clear_cache(force = TRUE)
+}
 }

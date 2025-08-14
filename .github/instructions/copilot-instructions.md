@@ -33,3 +33,10 @@ Metadata: JSON from GitHub repo
 - Parse TSV into tibble
 - Wrap in S3 class with metadata
 - Cache locally in ~/.openesm/
+
+## Documentation
+- Use roxygen2 for function docs
+- Include examples in all outward-facing functions
+- Wrap examples in \donttest{} to avoid running during package checks
+- When referencing a function, use \code{function()} format
+- Use \link{get_dataset} for internal links

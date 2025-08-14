@@ -2,20 +2,26 @@
 % Please edit documentation in R/S3_methods.R
 \name{cite.openesm_dataset}
 \alias{cite.openesm_dataset}
-\title{Cite method for openesm_dataset}
+\title{Get citation information for dataset}
 \usage{
 \method{cite}{openesm_dataset}(x, format = "bibtex", ...)
 }
 \arguments{
 \item{x}{An object of class \code{openesm_dataset}.}
 
-\item{format}{Character, format for citation (currently only enables "bibtex").}
+\item{format}{Character string specifying citation format. Currently only "bibtex" is supported.}
 
-\item{...}{Additional arguments (not used).}
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
-A character string with the citation information.
+Character string with citation information, returned invisibly.
 }
 \description{
-Cite method for openesm_dataset
+Get citation information for dataset
+}
+\examples{
+\dontrun{
+dataset <- get_dataset("0001")
+cite(dataset)
+}
 }

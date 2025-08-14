@@ -2,10 +2,15 @@
 
 #' Print method for openesm_dataset
 #'
-#' @param x An object of class `openesm_dataset`.
-#' @param ... Additional arguments passed to `print`.
+#' @param x An object of class \code{openesm_dataset}.
+#' @param ... Additional arguments (currently unused).
 #' @return Invisibly returns the original object.
 #' @importFrom cli cli_h1 cli_text cli_alert_info cli_bullets cli_div
+#' @examples
+#' \dontrun{
+#' dataset <- get_dataset("0001")
+#' print(dataset)
+#' }
 #' @export
 print.openesm_dataset <- function(x, ...) {
   # apply a local theme just for this output
@@ -41,10 +46,15 @@ print.openesm_dataset <- function(x, ...) {
 
 #' Print method for a list of openesm_dataset objects
 #'
-#' @param x An object of class `openesm_dataset_list`.
-#' @param ... Additional arguments passed to `print`.
+#' @param x An object of class \code{openesm_dataset_list}.
+#' @param ... Additional arguments (currently unused).
 #' @return Invisibly returns the original object.
 #' @importFrom cli cli_h1 cli_text cli_bullets cli_alert_info cli_div style_bold
+#' @examples
+#' \dontrun{
+#' datasets <- get_dataset(c("00011", "00012"))
+#' print(datasets)
+#' }
 #' @export
 print.openesm_dataset_list <- function(x, ...) {
   # apply a local theme just for this output
@@ -78,12 +88,17 @@ print.openesm_dataset_list <- function(x, ...) {
 
 
 
-#' Cite method for openesm_dataset
+#' Get citation information for dataset
 #' 
-#' @param x An object of class `openesm_dataset`.
-#' @param format Character, format for citation (currently only enables "bibtex").
-#' @param ... Additional arguments (not used).
-#' @return A character string with the citation information.
+#' @param x An object of class \code{openesm_dataset}.
+#' @param format Character string specifying citation format. Currently only "bibtex" is supported.
+#' @param ... Additional arguments (currently unused).
+#' @return Character string with citation information, returned invisibly.
+#' @examples
+#' \dontrun{
+#' dataset <- get_dataset("0001")
+#' cite(dataset)
+#' }
 #' @importFrom cli cli_abort cli_alert_info cli_text cli_code
 #' @export
 cite.openesm_dataset <- function(x, format = "bibtex", ...) {
@@ -129,11 +144,16 @@ cite.openesm_dataset <- function(x, format = "bibtex", ...) {
 }
 
 
-#' Notes method for openesm_dataset
+#' Get additional notes for dataset
 #' 
-#' @param x An object of class `openesm_dataset`.
-#' @param ... Additional arguments (not used).
-#' @return A character vector with the notes for the dataset, returned invisibly.
+#' @param x An object of class \code{openesm_dataset}.
+#' @param ... Additional arguments (currently unused).
+#' @return Character vector with dataset notes, returned invisibly.
+#' @examples
+#' \dontrun{
+#' dataset <- get_dataset("0001")
+#' notes(dataset)
+#' }
 #' @importFrom cli cli_h1 cli_bullets cli_alert_info
 #' @export
 notes.openesm_dataset <- function(x, ...) {

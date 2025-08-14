@@ -2,9 +2,9 @@
 #' @keywords internal
 
 #' Get the openesm cache directory
-#' 
-#' @param subdir Optional subdirectory within the cache
+#' @param type Optional subdirectory within the cache
 #' @return Path to cache directory
+#' @keywords internal
 #' @noRd
 get_cache_dir <- function(type = NULL) {
   # user cache directory
@@ -28,6 +28,12 @@ get_cache_dir <- function(type = NULL) {
 #'
 #' Shows the location and total size of the local file cache.
 #'
+#' @return Invisibly returns \code{NULL}.
+#' @examples
+#' \donttest{
+#' # view cache information
+#' cache_info()
+#' }
 #' @importFrom cli cli_alert_info
 #' @importFrom fs dir_exists dir_info fs_bytes
 #' @export
@@ -50,8 +56,17 @@ cache_info <- function() {
 #'
 #' Removes all cached openesm data from your local machine.
 #'
-#' @param force Logical, if TRUE, will not ask for confirmation before deleting.
-#'   Defaults to FALSE.
+#' @param force Logical. If \code{TRUE}, will not ask for confirmation before 
+#'   deleting. Default is \code{FALSE}.
+#' @return Invisibly returns \code{NULL}.
+#' @examples
+#' \dontrun{
+#' # clear cache with confirmation prompt
+#' clear_cache()
+#' 
+#' # force clear without confirmation
+#' clear_cache(force = TRUE)
+#' }
 #' @importFrom cli cli_abort cli_alert_info cli_alert_success
 #' @importFrom fs dir_exists
 #' @importFrom utils askYesNo
@@ -86,24 +101,28 @@ clear_cache <- function(force = FALSE) {
 }
 
 #' Get path to metadata cache
+#' @keywords internal
 #' @noRd
 get_metadata_dir <- function() {
   get_cache_dir(type = "metadata")
 }
 
 #' Get path to data cache
+#' @keywords internal
 #' @noRd
 get_data_dir <- function() {
   get_cache_dir(type = "data")
 }
 
 #' Check if running in interactive mode with CLI messaging
+#' @keywords internal
 #' @noRd
 is_interactive_cli <- function() {
   interactive() && !isTRUE(getOption("openesm.quiet"))
 }
 
 #' Create a consistent message format
+#' @keywords internal
 #' @noRd
 msg_info <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
@@ -112,6 +131,7 @@ msg_info <- function(..., .envir = parent.frame()) {
 }
 
 #' Create a consistent warning format
+#' @keywords internal
 #' @noRd
 msg_warn <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
@@ -120,6 +140,7 @@ msg_warn <- function(..., .envir = parent.frame()) {
 }
 
 #' Create a consistent success format
+#' @keywords internal
 #' @noRd
 msg_success <- function(..., .envir = parent.frame()) {
   if (!isTRUE(getOption("openesm.quiet"))) {
@@ -129,6 +150,7 @@ msg_success <- function(..., .envir = parent.frame()) {
 
 
 #' Read JSON with error handling
+#' @keywords internal
 #' @noRd
 read_json_safe <- function(path) {
   tryCatch({
@@ -143,6 +165,7 @@ read_json_safe <- function(path) {
 }
 
 #' Download file with progress
+#' @keywords internal
 #' @noRd
 download_with_progress <- function(url, destfile) {
   if (is_interactive_cli()) {
@@ -175,6 +198,7 @@ download_with_progress <- function(url, destfile) {
 }
 
 #' Construct dataset path
+#' @keywords internal
 #' @noRd
 get_cache_path <- function(dataset_id,
                            version,
@@ -195,13 +219,14 @@ get_cache_path <- function(dataset_id,
   return(path)
 }
 
-#' Process Specific Dataset Metadata
+#' Process specific dataset metadata
 #'
 #' Helper function to process the raw list from a specific dataset's
 #' metadata JSON into a clean, one-row tibble.
 #'
 #' @param raw_meta The raw list parsed from the metadata json file.
 #' @return A one-row tibble.
+#' @keywords internal
 #' @importFrom tibble tibble
 #' @importFrom dplyr bind_rows
 #' @noRd

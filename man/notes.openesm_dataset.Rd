@@ -2,18 +2,24 @@
 % Please edit documentation in R/S3_methods.R
 \name{notes.openesm_dataset}
 \alias{notes.openesm_dataset}
-\title{Notes method for openesm_dataset}
+\title{Get additional notes for dataset}
 \usage{
 \method{notes}{openesm_dataset}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{openesm_dataset}.}
 
-\item{...}{Additional arguments (not used).}
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
-A character vector with the notes for the dataset, returned invisibly.
+Character vector with dataset notes, returned invisibly.
 }
 \description{
-Notes method for openesm_dataset
+Get additional notes for dataset
+}
+\examples{
+\dontrun{
+dataset <- get_dataset("0001")
+notes(dataset)
+}
 }

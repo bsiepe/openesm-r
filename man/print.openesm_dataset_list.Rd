@@ -9,11 +9,17 @@
 \arguments{
 \item{x}{An object of class \code{openesm_dataset_list}.}
 
-\item{...}{Additional arguments passed to \code{print}.}
+\item{...}{Additional arguments (currently unused).}
 }
 \value{
 Invisibly returns the original object.
 }
 \description{
 Print method for a list of openesm_dataset objects
+}
+\examples{
+\dontrun{
+datasets <- get_dataset(c("00011", "00012"))
+print(datasets)
+}
 }

@@ -6,6 +6,15 @@
 \usage{
 cache_info()
 }
+\value{
+Invisibly returns \code{NULL}.
+}
 \description{
 Shows the location and total size of the local file cache.
+}
+\examples{
+\donttest{
+# view cache information
+cache_info()
+}
 }

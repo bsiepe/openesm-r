@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_dataset.R
 \name{get_dataset}
 \alias{get_dataset}
-\title{Get a dataset from OpenESM}
+\title{Download ESM dataset(s) from OpenESM repository}
 \usage{
 get_dataset(
   dataset_id,
@@ -11,38 +11,90 @@ get_dataset(
   path = NULL,
   force_download = FALSE,
   sandbox = FALSE,
-  quiet = FALSE
+  quiet = FALSE,
+  ...
 )
 }
 \arguments{
-\item{dataset_id}{Character string or vector of dataset IDs}
+\item{dataset_id}{Character string or vector of dataset IDs. Use
+\code{\link{list_datasets}} to see available datasets.}
 
-\item{version}{Character string specifying the version (default is "latest")}
+\item{version}{Character string specifying the dataset version. Default is
+"latest" which downloads the most recent version.}
 
-\item{cache}{Logical, if TRUE uses cached version if available (default is TRUE)}
+\item{cache}{Logical. If \code{TRUE} (default), uses cached version if
+available and not expired.}
 
-\item{path}{Character string specifying the path to save the dataset (default is NULL)}
+\item{path}{Character string specifying custom download path. If \code{NULL}
+(default), files are cached in the user's cache directory.}
 
-\item{force_download}{Logical, if TRUE forces re-download even if cached version exists (
-default is FALSE)}
+\item{force_download}{Logical. If \code{TRUE}, forces re-download even if
+cached version exists. Default is \code{FALSE}.}
 
-\item{sandbox}{Logical, if TRUE uses Zenodo sandbox for testing (default is FALSE)}
+\item{sandbox}{Logical. If \code{TRUE}, uses Zenodo sandbox environment
+for testing. Default is \code{FALSE}.}
 
-\item{quiet}{Logical, if TRUE suppresses printing of dataset information (default is FALSE)}
+\item{quiet}{Logical. If \code{TRUE}, suppresses informational messages.
+Default is \code{FALSE}.}
+
+\item{...}{Additional arguments passed to \code{\link{list_datasets}}.}
 }
 \value{
-A data frame with the dataset, or a list of data frames for multiple
-datasets
+For single dataset: An S3 object of class \code{openesm_dataset}
+containing:
+\itemize{
+\item \code{data}: A tibble with the ESM data
+\item \code{metadata}: List with dataset metadata
+\item \code{dataset_id}: Character string with dataset identifier
+\item \code{version}: Character string with version number
+}
+For multiple datasets: An S3 object of class \code{openesm_dataset_list}
+containing a named list of \code{openesm_dataset} objects.
 }
 \description{
-Get a dataset from OpenESM
+Downloads one or more Experience Sampling Method (ESM) datasets from the
+OpenESM repository hosted on Zenodo. Returns an S3 object containing the
+dataset and associated metadata.
+}
+\details{
+This function downloads ESM datasets from Zenodo using DOIs stored in the
+OpenESM metadata repository. Datasets are cached locally to avoid repeated
+downloads. Use \code{force_download = TRUE} to refresh cached data.
+
+The function handles both individual datasets and batch downloads. When
+downloading multiple datasets, progress is shown for each download.
 }
 \examples{
 \dontrun{
-# Get a single dataset
-dataset <- get_dataset("example_dataset_id")
+# List available datasets first
+available <- list_datasets()
+head(available)
 
-# Get multiple datasets
-datasets <- get_dataset(c("dataset1", "dataset2"))
+# Download a single dataset
+dataset <- get_dataset("0001")
+
+# Access the data
+head(dataset$data)
+
+# View metadata
+dataset$metadata
+
+# Download multiple datasets
+datasets <- get_dataset(c("0001", "0002"))
+
+# Access individual datasets from the list
+datasets$dataset1$data
+
+# Force re-download to get latest version
+dataset_fresh <- get_dataset("0001", force_download = TRUE)
+
+# Download to custom path
+dataset_custom <- get_dataset("0001", path = "~/my_data")
 }
+
+}
+\seealso{
+\code{\link{list_datasets}} for available datasets,
+\code{\link{cite}} for citation information,
+\code{\link{license}} for license details
 }
