@@ -91,6 +91,9 @@ get_dataset <- function(dataset_id,
     return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox))
   }
   
+  # remove all non-numeric characters from dataset_id
+  dataset_id <- gsub("[^0-9]", "", dataset_id)
+  
   # get dataset catalog
   all_datasets <- list_datasets(...)
   if (!dataset_id %in% all_datasets$dataset_id) {
