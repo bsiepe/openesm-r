@@ -267,6 +267,7 @@ process_specific_metadata <- function(raw_meta) {
     link_to_code = get_val("link_to_code"),
     n_participants = get_val("n_participants", "integer"),
     n_time_points = get_val("n_time_points", "integer"),
+    n_days = get_val("n_days", "integer"),
     n_beeps_per_day = get_val("n_beeps_per_day"),
     passive_data_available = get_val("passive_data_available"),
     cross_sectional_available = get_val("cross_sectional_available"),
