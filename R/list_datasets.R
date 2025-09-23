@@ -6,8 +6,8 @@
 #'
 #' @param cache_hours Numeric. Number of hours to consider the cached dataset 
 #'   index valid. Default is 24. Set to 0 to force fresh download.
-#' @param version Character string specifying the metadata version. Default is 
-#'   "latest" which downloads the most recent version.
+#' @param metadata_version Character string specifying the metadata catalog version. 
+#'   Default is "latest" which downloads the most recent version.
 #'
 #' @return A tibble with one row per dataset containing:
 #'   \itemize{
@@ -62,15 +62,18 @@
 #' # Force fresh download of index
 #' fresh_list <- list_datasets(cache_hours = 0)
 #' 
+#' # Use specific metadata version
+#' datasets_v1 <- list_datasets(metadata_version = "v1.0.0")
+#' 
 #' # Use dataset IDs with get_dataset()
 #' dataset <- get_dataset(datasets$dataset_id[1])
 #' }
 #'
 #' @export
-list_datasets <- function(cache_hours = 24, version = "latest") {
+list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
   # resolve the version first to get the actual version tag
   metadata_doi <- "10.5281/zenodo.17182171"
-  resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = FALSE)
+  resolved_version <- resolve_zenodo_version(metadata_doi, metadata_version, sandbox = FALSE)
   
   # define the path to the cached metadata index file using resolved version
   metadata_dir <- get_cache_dir("metadata")

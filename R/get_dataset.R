@@ -18,7 +18,8 @@
 #'   for testing. Default is \code{FALSE}.
 #' @param quiet Logical. If \code{TRUE}, suppresses informational messages. 
 #'   Default is \code{FALSE}.
-#' @param ... Additional arguments passed to \code{\link{list_datasets}}.
+#' @param ... Additional arguments passed to \code{\link{list_datasets}}. This
+#'   includes \code{metadata_version} to specify the metadata catalog version.
 #'
 #' @return For single dataset: An S3 object of class \code{openesm_dataset} 
 #'   containing:
@@ -26,7 +27,8 @@
 #'     \item \code{data}: A tibble with the ESM data
 #'     \item \code{metadata}: List with dataset metadata
 #'     \item \code{dataset_id}: Character string with dataset identifier
-#'     \item \code{version}: Character string with version number
+#'     \item \code{dataset_version}: Character string with dataset version number
+#'     \item \code{metadata_version}: Character string with metadata catalog version
 #'   }
 #'   For multiple datasets: An S3 object of class \code{openesm_dataset_list} 
 #'   containing a named list of \code{openesm_dataset} objects.
@@ -60,14 +62,19 @@
 #' # Access the data
 #' head(dataset$data)
 #' 
-#' # View metadata
+#' # View metadata and provenance information
 #' dataset$metadata
+#' dataset$dataset_version  # Dataset version  
+#' dataset$metadata_version # Metadata catalog version
 #' 
 #' # Download multiple datasets
 #' datasets <- get_dataset(c("0001", "0002"))
 #' 
 #' # Access individual datasets from the list
-#' datasets$dataset1$data
+#' datasets[["0001"]]$data
+#' 
+#' # Use specific metadata catalog version
+#' dataset_v1 <- get_dataset("0001", metadata_version = "1.0.0")
 #' 
 #' # Force re-download to get latest version
 #' dataset_fresh <- get_dataset("0001", force_download = TRUE)
@@ -88,11 +95,17 @@ get_dataset <- function(dataset_id,
   
   # handle multiple datasets
   if (length(dataset_id) > 1) {
-    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox))
+    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox, ...))
   }
   
   # remove all non-numeric characters from dataset_id
   dataset_id <- gsub("[^0-9]", "", dataset_id)
+  
+  # resolve metadata version to track provenance
+  metadata_doi <- "10.5281/zenodo.17182171"
+  dots <- list(...)
+  metadata_version_requested <- dots$metadata_version %||% "latest"
+  resolved_metadata_version <- resolve_zenodo_version(metadata_doi, metadata_version_requested, sandbox = FALSE)
   
   # get dataset catalog
   all_datasets <- list_datasets(...)
@@ -168,7 +181,8 @@ get_dataset <- function(dataset_id,
       data = data,
       metadata = formatted_meta,
       dataset_id = dataset_id,
-      version = actual_version
+      dataset_version = actual_version,
+      metadata_version = resolved_metadata_version
     ),
     class = "openesm_dataset"
   )
@@ -202,7 +216,8 @@ get_multiple_datasets <- function(dataset_ids,
                                   version,
                                   cache,
                                   force_download,
-                                  sandbox) {
+                                  sandbox,
+                                  ...) {
   result <- list()
   for (id in dataset_ids) {
     # call get_dataset in 'quiet' mode to suppress individual prints
@@ -212,7 +227,8 @@ get_multiple_datasets <- function(dataset_ids,
       cache = cache,
       force_download = force_download,
       sandbox = sandbox,
-      quiet = TRUE
+      quiet = TRUE,
+      ...
     )
   }
   # assign a special class to the list for custom printing

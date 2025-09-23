@@ -28,7 +28,8 @@ print.openesm_dataset <- function(x, ...) {
   meta <- x$metadata
 
   bullets <- c(
-    "*" = "Version: {.val {x$version}}",
+    "*" = "Dataset version: {.val {x$dataset_version}}",
+    "*" = "Metadata version: {.val {x$metadata_version}}",
     "*" = "Authors: {meta$first_author} et al. ({meta$year})",
     "*" = "Paper DOI: {meta$paper_doi}",
     "*" = "License: {meta$license}",
