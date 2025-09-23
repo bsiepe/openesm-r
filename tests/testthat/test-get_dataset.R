@@ -25,7 +25,7 @@ test_that("get_dataset downloads and processes a single dataset", {
   
   expect_s3_class(ds, "openesm_dataset")
   expect_equal(ds$dataset_id, "0001")
-  expect_equal(ds$version, "1.0.0")
+  expect_equal(ds$dataset_version, "1.0.0")
   expect_equal(nrow(ds$data), 5)
 })
 
@@ -68,8 +68,12 @@ test_that("get_dataset errors for non-existent dataset", {
       json_string <- create_mock_dataset_json()
       raw_list <- jsonlite::fromJSON(json_string, simplifyVector = FALSE)
       openesm:::process_raw_datasets_list(raw_list)
-    }
+    },
+    resolve_zenodo_version = function(doi, version, sandbox) {
+      return("1.0.0")  # Mock successful version resolution
+    },
+    .package = "openesm"
   )
-  expect_error(get_dataset("non_existent_id"), "not found")
+  expect_error(get_dataset("9999"), "Dataset with id \"9999\" not found")
 })
 

@@ -5,7 +5,7 @@ test_that("print.openesm_dataset produces correct output", {
   output <- cli::cli_fmt(print(mock_dataset))
   
   # check for key components of the print output
-  expect_true(any(grepl("Version:", output)))
+  expect_true(any(grepl("Dataset version:", output)))
   expect_true(any(grepl("Authors:", output)))
   expect_true(any(grepl("Data:", output)))
 })

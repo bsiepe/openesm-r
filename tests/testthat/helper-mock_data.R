@@ -2,9 +2,10 @@
 # It is sourced automatically by testthat.
 
 create_mock_dataset_json <- function() {
-  '[
-    {
-      "dataset_id": "0001_test",
+  '{
+    "datasets": [
+      {
+        "dataset_id": "0001_test",
       "title": "Test Dataset 1",
       "author": "John Doe",
       "version": "1.0.0",
@@ -60,7 +61,8 @@ create_mock_dataset_json <- function() {
         }
       ]
     }
-  ]'
+  ]
+}'
 }
 
 create_mock_openesm_dataset <- function() {

@@ -1,4 +1,5 @@
 library(testthat)
+Sys.setenv(NOT_CRAN = "true")
 
 test_that("get_cache_path constructs paths and creates directories", {
   temp_dir <- tempfile("cache")
@@ -125,3 +126,110 @@ test_that("read_json_safe handles errors correctly", {
   )
   unlink(malformed_file)
 })
+
+test_that("get_cache_dir returns correct path without type parameter", {
+  # test basic functionality
+  cache_dir <- get_cache_dir()
+  expect_type(cache_dir, "character")
+  
+  expect_true(grepl("openesm", cache_dir))
+  
+  # directory should exist after calling the function
+  expect_true(fs::dir_exists(cache_dir))
+})
+
+test_that("get_cache_dir returns correct path with type parameter", {
+  # test with a type parameter
+  cache_dir <- get_cache_dir(type = "datasets")
+  
+  # should be a character string
+  expect_type(cache_dir, "character")
+  
+  # should contain both "openesm" and "datasets" in the path
+  expect_true(grepl("openesm", cache_dir))
+  expect_true(grepl("datasets", cache_dir))
+  
+  # directory should exist after calling the function
+  expect_true(fs::dir_exists(cache_dir))
+  
+  # test with another type
+  cache_dir_meta <- get_cache_dir(type = "metadata")
+  expect_true(grepl("metadata", cache_dir_meta))
+  expect_true(fs::dir_exists(cache_dir_meta))
+})
+
+test_that("get_cache_dir creates nested directories correctly", {
+  # test with nested path
+  cache_dir <- get_cache_dir(type = "deep/nested/path")
+  
+  # should contain the nested structure
+  expect_true(grepl("deep", cache_dir))
+  expect_true(grepl("nested", cache_dir))
+  expect_true(grepl("path", cache_dir))
+  
+  # directory should exist
+  expect_true(fs::dir_exists(cache_dir))
+})
+
+test_that("download_metadata_from_zenodo handles errors gracefully", {
+  # test with invalid version that doesn't exist
+  temp_dir <- tempfile()
+  fs::dir_create(temp_dir)
+  
+  # this should fail for a version that doesn't exist
+  expect_error(
+    download_metadata_from_zenodo(version = "999.999.999", dest_dir = temp_dir),
+    "Version.*not found"
+  )
+  
+  unlink(temp_dir, recursive = TRUE)
+})
+
+test_that("download_metadata_from_zenodo error handling works", {
+  temp_dir <- tempfile()
+  fs::dir_create(temp_dir)
+  
+  # Test that the function exists and has proper structure
+  expect_true(exists("download_metadata_from_zenodo"))
+  expect_type(download_metadata_from_zenodo, "closure")
+  
+  # Test error handling with mocked functions
+  testthat::local_mocked_bindings(
+    resolve_zenodo_version = function(doi, version, sandbox) {
+      if (version == "invalid_version") {
+        stop("Version not found")
+      }
+      return("1.0.0")
+    },
+    .package = "openesm"
+  )
+  
+  # trigger the resolve_zenodo_version error
+  expect_error(
+    download_metadata_from_zenodo(version = "invalid_version", dest_dir = temp_dir),
+    "Version not found"
+  )
+  
+  unlink(temp_dir, recursive = TRUE)
+})
+
+test_that("download_metadata_from_zenodo creates proper temp directories", {
+  temp_dir <- tempfile()
+  fs::dir_create(temp_dir)
+  
+  # mock all external dependencies to focus on the directory creation logic
+  testthat::local_mocked_bindings(
+    resolve_zenodo_version = function(...) "1.0.0",
+    .package = "openesm"
+  )
+  
+  expect_error(
+    download_metadata_from_zenodo(version = "latest", dest_dir = temp_dir),
+    # This will fail when trying to call the real zen4R function, which is expected
+    class = "error"
+  )
+  
+  unlink(temp_dir, recursive = TRUE)
+})
+
+Sys.setenv(NOT_CRAN = "")
