@@ -6,6 +6,8 @@
 #'
 #' @param cache_hours Numeric. Number of hours to consider the cached dataset 
 #'   index valid. Default is 24. Set to 0 to force fresh download.
+#' @param version Character string specifying the metadata version. Default is 
+#'   "latest" which downloads the most recent version.
 #'
 #' @return A tibble with one row per dataset containing:
 #'   \itemize{
@@ -46,10 +48,11 @@
 #' @seealso 
 #' \code{\link{get_dataset}} to download specific datasets
 #'
-#' @importFrom fs file_exists
+#' @importFrom fs file_exists dir_exists dir_create
 #' @importFrom dplyr bind_rows
 #' @importFrom purrr map_dfr
 #' @importFrom tibble tibble
+#' @importFrom cli cli_abort
 #'
 #' @examples
 #' \dontrun{
@@ -64,11 +67,15 @@
 #' }
 #'
 #' @export
-list_datasets <- function(cache_hours = 24) {
-  # define the path to the cached master index file
-  # this file lives in the root of the cache directory
-  index_dir <- get_cache_dir()
-  index_path <- file.path(index_dir, "datasets.json")
+list_datasets <- function(cache_hours = 24, version = "latest") {
+  # resolve the version first to get the actual version tag
+  metadata_doi <- "10.5281/zenodo.17182171"
+  resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = FALSE)
+  
+  # define the path to the cached metadata index file using resolved version
+  metadata_dir <- get_cache_dir("metadata")
+  version_dir <- file.path(metadata_dir, resolved_version)
+  index_path <- file.path(version_dir, "datasets.json")
 
   # determine if we need to download a fresh copy
   use_cache <- FALSE
@@ -81,10 +88,21 @@ list_datasets <- function(cache_hours = 24) {
   }
 
   if (!use_cache) {
-    # otherwise, download a fresh copy
-    msg_info("Downloading fresh dataset index from GitHub.")
-    index_url <- "https://raw.githubusercontent.com/bsiepe/openesm-metadata/refs/heads/main/datasets.json"
-    download_with_progress(index_url, index_path)
+    # otherwise, download a fresh copy from Zenodo
+    msg_info("Downloading fresh metadata index from Zenodo.")
+    
+    # ensure the version directory exists
+    if (!fs::dir_exists(version_dir)) {
+      fs::dir_create(version_dir, recurse = TRUE)
+    }
+    
+    # download and extract from Zenodo using resolved version
+    extracted_path <- download_metadata_from_zenodo(resolved_version, version_dir)
+    
+    # the extracted file should be our index_path
+    if (!fs::file_exists(index_path)) {
+      cli::cli_abort("Failed to extract datasets.json from Zenodo metadata")
+    }
   }
 
   # read the file and process it

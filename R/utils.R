@@ -267,7 +267,7 @@ process_specific_metadata <- function(raw_meta) {
     link_to_code = get_val("link_to_code"),
     n_participants = get_val("n_participants", "integer"),
     n_time_points = get_val("n_time_points", "integer"),
-    n_days = get_val("n_days", "integer"),
+    n_days = get_val("n_days"),
     n_beeps_per_day = get_val("n_beeps_per_day"),
     passive_data_available = get_val("passive_data_available"),
     cross_sectional_available = get_val("cross_sectional_available"),
@@ -280,5 +280,93 @@ process_specific_metadata <- function(raw_meta) {
     additional_comments = get_val("additional_comments"),
     features = list(features_tibble)
   )
+}
+
+#' Download and extract metadata ZIP from Zenodo
+#'
+#' Downloads the metadata ZIP file from Zenodo and extracts the datasets.json file.
+#'
+#' @param version Character string specifying the metadata version
+#' @param dest_dir Character string with destination directory for extracted files
+#' @return Character string with path to extracted datasets.json file
+#' @keywords internal
+#' @importFrom zen4R get_versions
+#' @importFrom cli cli_abort
+#' @importFrom httr GET status_code content
+#' @importFrom fs dir_exists
+#' @noRd
+download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
+  # metadata repository DOI
+  metadata_doi <- "10.5281/zenodo.17182171"
+  
+  # resolve version using existing zenodo utilities
+  resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = FALSE)
+  
+  # get the specific version record to find the files
+  data_versions <- suppressMessages(zen4R::get_versions(metadata_doi, sandbox = FALSE))
+  version_record <- data_versions[data_versions$version == resolved_version, ]
+  
+  if (nrow(version_record) == 0) {
+    cli::cli_abort("Version {resolved_version} not found for metadata repository")
+  }
+  
+  # extract record ID from DOI and construct filename
+  specific_version_doi <- version_record$doi
+  record_id <- sub(".*zenodo\\.", "", specific_version_doi)
+  
+  # construct API URL to get file information
+  api_url <- paste0("https://zenodo.org/api/records/", record_id)
+  
+  # fetch record details to get file list
+  response <- httr::GET(api_url)
+  if (httr::status_code(response) != 200) {
+    cli::cli_abort("Failed to fetch record details from Zenodo API")
+  }
+  
+  record_data <- httr::content(response, as = "parsed")
+  files <- record_data$files
+  
+  # find the ZIP file (should be the only .zip file)
+  zip_files <- files[grepl("\\.zip$", sapply(files, function(f) f$key))]
+  
+  if (length(zip_files) == 0) {
+    cli::cli_abort("No ZIP file found in Zenodo metadata record version {resolved_version}")
+  }
+  
+  # use the first (and only) ZIP file
+  zip_file <- zip_files[[1]]
+  download_url <- zip_file$links$self
+  
+  # download the ZIP file
+  zip_path <- file.path(dest_dir, "metadata.zip")
+  download_with_progress(download_url, zip_path)
+  
+  # extract all files to a temporary subdirectory
+  temp_extract_dir <- file.path(dest_dir, "temp_extract")
+  if (fs::dir_exists(temp_extract_dir)) {
+    unlink(temp_extract_dir, recursive = TRUE)
+  }
+  
+  utils::unzip(zip_path, exdir = temp_extract_dir, overwrite = TRUE)
+  
+  # find the datasets.json file in the extracted structure
+  datasets_json_files <- list.files(temp_extract_dir, 
+                                    pattern = "^datasets\\.json$", 
+                                    recursive = TRUE, 
+                                    full.names = TRUE)
+  
+  if (length(datasets_json_files) == 0) {
+    cli::cli_abort("datasets.json not found in downloaded ZIP file")
+  }
+  
+  # move the datasets.json file to the final location
+  final_path <- file.path(dest_dir, "datasets.json")
+  file.copy(datasets_json_files[1], final_path, overwrite = TRUE)
+  
+  # clean up temporary files
+  unlink(temp_extract_dir, recursive = TRUE)
+  file.remove(zip_path)
+  
+  return(final_path)
 }
 
