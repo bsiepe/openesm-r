@@ -37,7 +37,8 @@ for testing. Default is \code{FALSE}.}
 \item{quiet}{Logical. If \code{TRUE}, suppresses informational messages.
 Default is \code{FALSE}.}
 
-\item{...}{Additional arguments passed to \code{\link{list_datasets}}.}
+\item{...}{Additional arguments passed to \code{\link{list_datasets}}. This
+includes \code{metadata_version} to specify the metadata catalog version.}
 }
 \value{
 For single dataset: An S3 object of class \code{openesm_dataset}
@@ -46,7 +47,8 @@ containing:
 \item \code{data}: A tibble with the ESM data
 \item \code{metadata}: List with dataset metadata
 \item \code{dataset_id}: Character string with dataset identifier
-\item \code{version}: Character string with version number
+\item \code{dataset_version}: Character string with dataset version number
+\item \code{metadata_version}: Character string with metadata catalog version
 }
 For multiple datasets: An S3 object of class \code{openesm_dataset_list}
 containing a named list of \code{openesm_dataset} objects.
@@ -76,14 +78,19 @@ dataset <- get_dataset("0001")
 # Access the data
 head(dataset$data)
 
-# View metadata
+# View metadata and provenance information
 dataset$metadata
+dataset$dataset_version  # Dataset version  
+dataset$metadata_version # Metadata catalog version
 
 # Download multiple datasets
 datasets <- get_dataset(c("0001", "0002"))
 
 # Access individual datasets from the list
-datasets$dataset1$data
+datasets[["0001"]]$data
+
+# Use specific metadata catalog version
+dataset_v1 <- get_dataset("0001", metadata_version = "1.0.0")
 
 # Force re-download to get latest version
 dataset_fresh <- get_dataset("0001", force_download = TRUE)

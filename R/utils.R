@@ -292,7 +292,7 @@ process_specific_metadata <- function(raw_meta) {
 #' @keywords internal
 #' @importFrom zen4R get_versions
 #' @importFrom cli cli_abort
-#' @importFrom httr GET status_code content
+#' @importFrom httr2 request req_perform resp_body_json resp_status
 #' @importFrom fs dir_exists
 #' @noRd
 download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
@@ -318,12 +318,14 @@ download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
   api_url <- paste0("https://zenodo.org/api/records/", record_id)
   
   # fetch record details to get file list
-  response <- httr::GET(api_url)
-  if (httr::status_code(response) != 200) {
+  response <- httr2::request(api_url) |>
+    httr2::req_perform()
+    
+  if (httr2::resp_status(response) != 200) {
     cli::cli_abort("Failed to fetch record details from Zenodo API")
   }
   
-  record_data <- httr::content(response, as = "parsed")
+  record_data <- httr2::resp_body_json(response)
   files <- record_data$files
   
   # find the ZIP file (should be the only .zip file)
