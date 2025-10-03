@@ -21,7 +21,7 @@
 #' @param ... Additional arguments passed to \code{\link{list_datasets}}. This
 #'   includes \code{metadata_version} to specify the metadata catalog version.
 #'
-#' @return For single dataset: An S3 object of class \code{openesm_dataset} 
+#' @return For single dataset: An S3 object of class \code{openesm_dataset}
 #'   containing:
 #'   \itemize{
 #'     \item \code{data}: A tibble with the ESM data
@@ -30,7 +30,7 @@
 #'     \item \code{dataset_version}: Character string with dataset version number
 #'     \item \code{metadata_version}: Character string with metadata catalog version
 #'   }
-#'   For multiple datasets: An S3 object of class \code{openesm_dataset_list} 
+#'   For multiple datasets: An S3 object of class \code{openesm_dataset_list}
 #'   containing a named list of \code{openesm_dataset} objects.
 #'
 #' @details
@@ -95,7 +95,9 @@ get_dataset <- function(dataset_id,
   
   # handle multiple datasets
   if (length(dataset_id) > 1) {
-    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox, ...))
+    return(get_multiple_datasets(
+      dataset_id, version, cache, force_download, sandbox, ...)
+      )
   }
   
   # remove all non-numeric characters from dataset_id
@@ -105,8 +107,9 @@ get_dataset <- function(dataset_id,
   metadata_doi <- "10.5281/zenodo.17182171"
   dots <- list(...)
   metadata_version_requested <- dots$metadata_version %||% "latest"
-  resolved_metadata_version <- resolve_zenodo_version(metadata_doi, metadata_version_requested, sandbox = FALSE)
-  
+  resolved_metadata_version <- resolve_zenodo_version(
+    metadata_doi, metadata_version_requested, sandbox = FALSE
+    )
   # get dataset catalog
   all_datasets <- list_datasets(...)
   if (!dataset_id %in% all_datasets$dataset_id) {
@@ -121,16 +124,17 @@ get_dataset <- function(dataset_id,
   
   # get metadata from github
   metadata_gh_folder <- paste0(dataset_info$dataset_id, "_", author_lower, "/")
-  metadata_gh_path <- paste0(dataset_info$dataset_id, "_", author_lower,  "_metadata.json")
+  metadata_gh_path <- paste0(dataset_info$dataset_id, "_", author_lower, "_metadata.json")
   metadata_url <- paste0(
     "https://raw.githubusercontent.com/bsiepe/openesm-metadata/main/datasets/",
-    metadata_gh_folder, metadata_gh_path
+    metadata_gh_folder,
+    metadata_gh_path
   )
   # cache metadata
   local_metadata_path <- get_cache_path(dataset_id,
                                         filename = metadata_gh_path,
                                         type = "metadata",
-                                        version = "latest") # metadata is not version specific
+                                        version = "latest") # metadata not version specific
   
   if (!fs::file_exists(local_metadata_path) || force_download) {
     download_with_progress(metadata_url, local_metadata_path)
@@ -151,7 +155,10 @@ get_dataset <- function(dataset_id,
   # determine cache/destination path
   filename <- paste0(dataset_id, "_", author_lower, "_ts.tsv")
   if (is.null(path)) {
-    local_data_path <- get_cache_path(dataset_id, filename = filename, type = "data", version = actual_version)
+    local_data_path <- get_cache_path(dataset_id,
+                                      filename = filename,
+                                      type = "data",
+                                      version = actual_version)
   } else {
     local_data_path <- fs::path(path, filename)
   }

@@ -70,7 +70,8 @@
 #' }
 #'
 #' @export
-list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
+list_datasets <- function(cache_hours = 24,
+                          metadata_version = "latest") {
   # resolve the version first to get the actual version tag
   metadata_doi <- "10.5281/zenodo.17182171"
   resolved_version <- resolve_zenodo_version(metadata_doi, metadata_version, sandbox = FALSE)
@@ -79,7 +80,7 @@ list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
   metadata_dir <- get_cache_dir("metadata")
   version_dir <- file.path(metadata_dir, resolved_version)
   index_path <- file.path(version_dir, "datasets.json")
-
+  
   # determine if we need to download a fresh copy
   use_cache <- FALSE
   if (fs::file_exists(index_path)) {
@@ -89,7 +90,7 @@ list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
       use_cache <- TRUE
     }
   }
-
+  
   if (!use_cache) {
     # otherwise, download a fresh copy from Zenodo
     msg_info("Downloading fresh metadata index from Zenodo.")
@@ -107,7 +108,7 @@ list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
       cli::cli_abort("Failed to extract datasets.json from Zenodo metadata")
     }
   }
-
+  
   # read the file and process it
   raw_list <- read_json_safe(index_path)
   return(process_raw_datasets_list(raw_list))
@@ -125,7 +126,7 @@ list_datasets <- function(cache_hours = 24, metadata_version = "latest") {
 #' @noRd
 process_raw_datasets_list <- function(raw_list) {
   datasets_list <- raw_list$datasets
-
+  
   # iterate over each dataset, applying the same
   # processing function used by get_dataset()
   purrr::map_dfr(datasets_list, process_specific_metadata)
