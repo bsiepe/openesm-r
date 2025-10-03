@@ -18,3 +18,4 @@
 ^scratch$
 ^TODO\.md$
 ^.*\.Rproj$
+^LICENSE\.md$
