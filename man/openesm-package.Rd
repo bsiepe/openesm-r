@@ -4,9 +4,9 @@
 \name{openesm-package}
 \alias{openesm}
 \alias{openesm-package}
-\title{openesm: Access the Open Experience Sampling Method (openESM) Database}
+\title{openesm: Access the Open Experience Sampling Method Database}
 \description{
-Provides programmatic access to the openESM database, a collection of harmonized experience sampling datasets. The package enables researchers to discover, download, and work with the datasets while ensuring proper citation and license compliance.
+Provides programmatic access to the Open Experience Sampling Method (openESM) database, a collection of harmonized experience sampling datasets. The package enables researchers to discover, download, and work with the datasets while ensuring proper citation and license compliance.
 }
 \seealso{
 Useful links:

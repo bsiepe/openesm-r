@@ -2,7 +2,7 @@
 
 [![R-CMD-check](https://github.com/bsiepe/openesm-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bsiepe/openesm-r/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/bsiepe/openesm-r/graph/badge.svg)](https://app.codecov.io/gh/bsiepe/openesm-r)
-[![CRAN status](https://www.r-pkg.org/badges/version/openesm)](https://CRAN.R-project.org/package=openesm)
+<!-- [![CRAN status](https://www.r-pkg.org/badges/version/openesm)](https://www.r-pkg.org/badges/version/openesm) -->
 
 The `openesm` package provides programmatic access to the openESM database, a collection of harmonized Experience Sampling Method (ESM) datasets ([openesmdata.org](https://openesmdata.org)). It enables researchers to discover, download, and work with ESM data while ensuring proper citation and license compliance.
 

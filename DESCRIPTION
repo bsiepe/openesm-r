@@ -1,5 +1,5 @@
 Package: openesm
-Title: Access the Open Experience Sampling Method (openESM) Database
+Title: Access the Open Experience Sampling Method Database
 Version: 0.0.0.9000
 Authors@R: 
     c(person("Björn S.", "Siepe", 
@@ -10,7 +10,7 @@ Authors@R:
     email = "kloft.dev@gmail.com",
     role = c("aut"),
     comment = c(ORCID = "0000-0003-1845-6957")))
-Description: Provides programmatic access to the openESM database, a collection
+Description: Provides programmatic access to the Open Experience Sampling Method (openESM) database, a collection
     of harmonized experience sampling datasets. The package enables researchers 
     to discover, download, and work with the datasets while ensuring proper 
     citation and license compliance.  

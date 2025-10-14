@@ -7,10 +7,20 @@
 notes(x, ...)
 }
 \arguments{
-\item{x}{An object to get notes for}
+\item{x}{An object of class \code{openesm_dataset}.}
 
 \item{...}{Additional arguments passed to methods}
 }
+\value{
+Additional notes and information about the dataset(s)
+}
 \description{
 Additional notes for OpenESM datasets
+}
+\examples{
+\dontrun{
+# Get notes for a dataset
+data <- get_dataset("0001")
+notes(dataset)
+}
 }

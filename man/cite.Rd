@@ -7,10 +7,20 @@
 cite(x, ...)
 }
 \arguments{
-\item{x}{An object to get citation information for}
+\item{x}{An object of class \code{openesm_dataset}.}
 
 \item{...}{Additional arguments passed to methods}
 }
+\value{
+Citation information for the dataset(s)
+}
 \description{
 Citation information for OpenESM datasets
+}
+\examples{
+\dontrun{
+# Get citation for a dataset
+data <- get_dataset("0001")
+cite(dataset)
+}
 }
