@@ -40,7 +40,7 @@ datasets[1, ]
 
 ```r
 # Download a single dataset
-data <- get_dataset("example_dataset_id")
+data <- get_dataset("0001")
 
 # Access the data
 head(data$data)
@@ -49,7 +49,7 @@ head(data$data)
 data$metadata
 
 # Download multiple datasets
-multiple_data <- get_dataset(c("dataset1", "dataset2"))
+multiple_data <- get_dataset(c("0001", "0002"))
 ```
 
 ### Citation and licensing
@@ -57,9 +57,6 @@ multiple_data <- get_dataset(c("dataset1", "dataset2"))
 ```r
 # Get citation information
 cite(data)
-
-# View license details
-license(data)
 
 # Additional notes
 notes(data)
@@ -90,7 +87,7 @@ When using datasets from the openESM database, please cite the original publicat
 
 ## License
 
-This package is licensed under the MIT License. Individual datasets may have different licenses - check using the `license()` function.
+This package is licensed under the MIT License. Individual datasets may have different licenses - check the metadata for each dataset.
 
 ## Contributing
 

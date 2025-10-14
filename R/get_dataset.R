@@ -41,10 +41,9 @@
 #' The function handles both individual datasets and batch downloads. When 
 #' downloading multiple datasets, progress is shown for each download.
 #'
-#' @seealso 
+#' @seealso
 #' \code{\link{list_datasets}} for available datasets,
-#' \code{\link{cite}} for citation information,
-#' \code{\link{license}} for license details
+#' \code{\link{cite}} for citation information
 #'
 #' @importFrom cli cli_abort cli_alert_success
 #' @importFrom readr read_tsv

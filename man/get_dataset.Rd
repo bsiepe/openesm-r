@@ -102,6 +102,5 @@ dataset_custom <- get_dataset("0001", path = "~/my_data")
 }
 \seealso{
 \code{\link{list_datasets}} for available datasets,
-\code{\link{cite}} for citation information,
-\code{\link{license}} for license details
+\code{\link{cite}} for citation information
 }
