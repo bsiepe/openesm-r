@@ -17,7 +17,7 @@ get_dataset(
 }
 \arguments{
 \item{dataset_id}{Character string or vector of dataset IDs. Use
-\code{\link{list_datasets}} to see available datasets.}
+\code{\link[=list_datasets]{list_datasets()}} to see available datasets.}
 
 \item{version}{Character string specifying the dataset version. Default is
 "latest" which downloads the most recent version.}
@@ -37,8 +37,8 @@ for testing. Default is \code{FALSE}.}
 \item{quiet}{Logical. If \code{TRUE}, suppresses informational messages.
 Default is \code{FALSE}.}
 
-\item{...}{Additional arguments passed to \code{\link{list_datasets}}. This
-includes \code{metadata_version} to specify the metadata catalog version.}
+\item{...}{Additional arguments passed to \code{\link[=list_datasets]{list_datasets()}}.
+This includes \code{metadata_version} to specify the metadata catalog version.}
 }
 \value{
 For single dataset: An S3 object of class \code{openesm_dataset}
@@ -80,7 +80,7 @@ head(dataset$data)
 
 # View metadata and provenance information
 dataset$metadata
-dataset$dataset_version  # Dataset version  
+dataset$dataset_version  # Dataset version
 dataset$metadata_version # Metadata catalog version
 
 # Download multiple datasets
@@ -101,6 +101,6 @@ dataset_custom <- get_dataset("0001", path = "~/my_data")
 
 }
 \seealso{
-\code{\link{list_datasets}} for available datasets,
-\code{\link{cite}} for citation information
+\code{\link[=list_datasets]{list_datasets()}} for available datasets,
+\code{\link[=cite]{cite()}} for citation information
 }

@@ -1,25 +1,25 @@
 #' Download ESM dataset(s) from OpenESM repository
 #'
-#' Downloads one or more Experience Sampling Method (ESM) datasets from the 
-#' OpenESM repository hosted on Zenodo. Returns an S3 object containing the 
+#' Downloads one or more Experience Sampling Method (ESM) datasets from the
+#' OpenESM repository hosted on Zenodo. Returns an S3 object containing the
 #' dataset and associated metadata.
 #'
-#' @param dataset_id Character string or vector of dataset IDs. Use 
-#'   \code{\link{list_datasets}} to see available datasets.
-#' @param version Character string specifying the dataset version. Default is 
+#' @param dataset_id Character string or vector of dataset IDs. Use
+#'   [list_datasets()] to see available datasets.
+#' @param version Character string specifying the dataset version. Default is
 #'   "latest" which downloads the most recent version.
-#' @param path Character string specifying custom download path. If \code{NULL} 
+#' @param path Character string specifying custom download path. If \code{NULL}
 #'   (default), files are cached in the user's cache directory.
-#' @param cache Logical. If \code{TRUE} (default), uses cached version if 
+#' @param cache Logical. If \code{TRUE} (default), uses cached version if
 #'   available and not expired.
-#' @param force_download Logical. If \code{TRUE}, forces re-download even if 
+#' @param force_download Logical. If \code{TRUE}, forces re-download even if
 #'   cached version exists. Default is \code{FALSE}.
-#' @param sandbox Logical. If \code{TRUE}, uses Zenodo sandbox environment 
+#' @param sandbox Logical. If \code{TRUE}, uses Zenodo sandbox environment
 #'   for testing. Default is \code{FALSE}.
-#' @param quiet Logical. If \code{TRUE}, suppresses informational messages. 
+#' @param quiet Logical. If \code{TRUE}, suppresses informational messages.
 #'   Default is \code{FALSE}.
-#' @param ... Additional arguments passed to \code{\link{list_datasets}}. This
-#'   includes \code{metadata_version} to specify the metadata catalog version.
+#' @param ... Additional arguments passed to [list_datasets()].
+#' This includes \code{metadata_version} to specify the metadata catalog version.
 #'
 #' @return For single dataset: An S3 object of class \code{openesm_dataset}
 #'   containing:
@@ -34,16 +34,16 @@
 #'   containing a named list of \code{openesm_dataset} objects.
 #'
 #' @details
-#' This function downloads ESM datasets from Zenodo using DOIs stored in the 
-#' OpenESM metadata repository. Datasets are cached locally to avoid repeated 
+#' This function downloads ESM datasets from Zenodo using DOIs stored in the
+#' OpenESM metadata repository. Datasets are cached locally to avoid repeated
 #' downloads. Use \code{force_download = TRUE} to refresh cached data.
-#' 
-#' The function handles both individual datasets and batch downloads. When 
+#'
+#' The function handles both individual datasets and batch downloads. When
 #' downloading multiple datasets, progress is shown for each download.
 #'
 #' @seealso
-#' \code{\link{list_datasets}} for available datasets,
-#' \code{\link{cite}} for citation information
+#' [list_datasets()] for available datasets,
+#' [cite()] for citation information
 #'
 #' @importFrom cli cli_abort cli_alert_success
 #' @importFrom readr read_tsv
@@ -54,30 +54,30 @@
 #' # List available datasets first
 #' available <- list_datasets()
 #' head(available)
-#' 
+#'
 #' # Download a single dataset
 #' dataset <- get_dataset("0001")
-#' 
+#'
 #' # Access the data
 #' head(dataset$data)
-#' 
+#'
 #' # View metadata and provenance information
 #' dataset$metadata
-#' dataset$dataset_version  # Dataset version  
+#' dataset$dataset_version  # Dataset version
 #' dataset$metadata_version # Metadata catalog version
-#' 
+#'
 #' # Download multiple datasets
 #' datasets <- get_dataset(c("0001", "0002"))
-#' 
+#'
 #' # Access individual datasets from the list
 #' datasets[["0001"]]$data
-#' 
+#'
 #' # Use specific metadata catalog version
 #' dataset_v1 <- get_dataset("0001", metadata_version = "1.0.0")
-#' 
+#'
 #' # Force re-download to get latest version
 #' dataset_fresh <- get_dataset("0001", force_download = TRUE)
-#' 
+#'
 #' # Download to custom path
 #' dataset_custom <- get_dataset("0001", path = "~/my_data")
 #' }
@@ -90,13 +90,10 @@ get_dataset <- function(dataset_id,
                         force_download = FALSE,
                         sandbox = FALSE,
                         quiet = FALSE,
-                        ...) { 
-  
+                        ...) {
   # handle multiple datasets
   if (length(dataset_id) > 1) {
-    return(get_multiple_datasets(
-      dataset_id, version, cache, force_download, sandbox, ...)
-      )
+    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox, ...))
   }
   
   # remove all non-numeric characters from dataset_id
@@ -106,9 +103,7 @@ get_dataset <- function(dataset_id,
   metadata_doi <- "10.5281/zenodo.17182171"
   dots <- list(...)
   metadata_version_requested <- dots$metadata_version %||% "latest"
-  resolved_metadata_version <- resolve_zenodo_version(
-    metadata_doi, metadata_version_requested, sandbox = FALSE
-    )
+  resolved_metadata_version <- resolve_zenodo_version(metadata_doi, metadata_version_requested, sandbox = FALSE)
   # get dataset catalog
   all_datasets <- list_datasets(...)
   if (!dataset_id %in% all_datasets$dataset_id) {
@@ -123,7 +118,10 @@ get_dataset <- function(dataset_id,
   
   # get metadata from github
   metadata_gh_folder <- paste0(dataset_info$dataset_id, "_", author_lower, "/")
-  metadata_gh_path <- paste0(dataset_info$dataset_id, "_", author_lower, "_metadata.json")
+  metadata_gh_path <- paste0(dataset_info$dataset_id,
+                             "_",
+                             author_lower,
+                             "_metadata.json")
   metadata_url <- paste0(
     "https://raw.githubusercontent.com/bsiepe/openesm-metadata/main/datasets/",
     metadata_gh_folder,
@@ -147,17 +145,19 @@ get_dataset <- function(dataset_id,
   if (is.null(zenodo_doi)) {
     cli::cli_abort("No Zenodo DOI found in metadata for dataset {dataset_id}")
   }
-
+  
   # resolve actual version if "latest" is requested
   actual_version <- resolve_zenodo_version(zenodo_doi, version, sandbox)
   
   # determine cache/destination path
   filename <- paste0(dataset_id, "_", author_lower, "_ts.tsv")
   if (is.null(path)) {
-    local_data_path <- get_cache_path(dataset_id,
-                                      filename = filename,
-                                      type = "data",
-                                      version = actual_version)
+    local_data_path <- get_cache_path(
+      dataset_id,
+      filename = filename,
+      type = "data",
+      version = actual_version
+    )
   } else {
     local_data_path <- fs::path(path, filename)
   }
@@ -180,7 +180,7 @@ get_dataset <- function(dataset_id,
   
   # format metadata for cleaner output
   formatted_meta <- as.list(process_specific_metadata(specific_meta_raw))
-
+  
   # add metadata and class
   dataset <- structure(
     list(
@@ -202,10 +202,10 @@ get_dataset <- function(dataset_id,
 }
 
 #' Helper function for multiple datasets
-#' 
+#'
 #' This function handles downloading multiple datasets by calling
-#' \code{\link{get_dataset}} for each dataset ID in the input vector.
-#' This is used internally by \code{\link{get_dataset}} when multiple IDs
+#' [get_dataset()] for each dataset ID in the input vector.
+#' This is used internally by [get_dataset()] when multiple IDs
 #' are provided.
 #' @param dataset_ids Character vector of dataset IDs to download.
 #' @param version Character string specifying the dataset version. Default is
@@ -245,4 +245,3 @@ get_multiple_datasets <- function(dataset_ids,
   
   return(invisible(result))
 }
-

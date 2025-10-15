@@ -45,7 +45,7 @@ A tibble with one row per dataset containing:
 \description{
 Retrieves a list of available Experience Sampling Method (ESM) datasets from
 the openESM metadata repository. Returns a tibble with
-dataset information and metadata that can be used with \code{\link{get_dataset}}.
+dataset information and metadata that can be used with \code{\link[=get_dataset]{get_dataset()}}.
 }
 \details{
 This function downloads and caches a master index of available datasets from
@@ -53,7 +53,7 @@ the OpenESM metadata repository. The index is cached locally to avoid repeated
 downloads. Use \code{cache_hours = 0} to force a fresh download of the index.
 
 The returned tibble can be filtered and explored to identify datasets of
-interest before downloading with \code{\link{get_dataset}}.
+interest before downloading with \code{\link[=get_dataset]{get_dataset()}}.
 }
 \examples{
 \dontrun{
@@ -72,5 +72,5 @@ dataset <- get_dataset(datasets$dataset_id[1])
 
 }
 \seealso{
-\code{\link{get_dataset}} to download specific datasets
+\code{\link[=get_dataset]{get_dataset()}} to download specific datasets
 }

@@ -20,7 +20,7 @@ Citation information for OpenESM datasets
 \examples{
 \dontrun{
 # Get citation for a dataset
-data <- get_dataset("0001")
+dataset <- get_dataset("0001")
 cite(dataset)
 }
 }

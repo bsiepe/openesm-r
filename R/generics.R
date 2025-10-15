@@ -5,7 +5,7 @@
 #' @examples
 #' \dontrun{
 #' # Get citation for a dataset
-#' data <- get_dataset("0001")
+#' dataset <- get_dataset("0001")
 #' cite(dataset)
 #' }
 #' @export
@@ -20,11 +20,10 @@ cite <- function(x, ...) {
 #' @examples
 #' \dontrun{
 #' # Get notes for a dataset
-#' data <- get_dataset("0001")
+#' dataset <- get_dataset("0001")
 #' notes(dataset)
 #' }
 #' @export
 notes <- function(x, ...) {
   UseMethod("notes")
 }
-

@@ -2,7 +2,7 @@
 #'
 #' Retrieves a list of available Experience Sampling Method (ESM) datasets from 
 #' the openESM metadata repository. Returns a tibble with 
-#' dataset information and metadata that can be used with \code{\link{get_dataset}}.
+#' dataset information and metadata that can be used with [get_dataset()].
 #'
 #' @param cache_hours Numeric. Number of hours to consider the cached dataset 
 #'   index valid. Default is 24. Set to 0 to force fresh download.
@@ -43,10 +43,10 @@
 #' downloads. Use \code{cache_hours = 0} to force a fresh download of the index.
 #' 
 #' The returned tibble can be filtered and explored to identify datasets of 
-#' interest before downloading with \code{\link{get_dataset}}.
+#' interest before downloading with [get_dataset()].
 #'
 #' @seealso 
-#' \code{\link{get_dataset}} to download specific datasets
+#' [get_dataset()] to download specific datasets
 #'
 #' @importFrom fs file_exists dir_exists dir_create
 #' @importFrom dplyr bind_rows

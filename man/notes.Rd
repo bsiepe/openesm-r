@@ -20,7 +20,7 @@ Additional notes for OpenESM datasets
 \examples{
 \dontrun{
 # Get notes for a dataset
-data <- get_dataset("0001")
+dataset <- get_dataset("0001")
 notes(dataset)
 }
 }
