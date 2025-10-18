@@ -39,8 +39,9 @@
 #'
 #' @details
 #' This function downloads and caches a master index of available datasets from 
-#' the OpenESM metadata repository. The index is cached locally to avoid repeated 
-#' downloads. Use \code{cache_hours = 0} to force a fresh download of the index.
+#' the openESM metadata repository, which is hosted on Zenodo. 
+#' The index is cached locally to avoid repeated downloads. 
+#' Use \code{cache_hours = 0} to force a fresh download of the index.
 #' 
 #' The returned tibble can be filtered and explored to identify datasets of 
 #' interest before downloading with [get_dataset()].
@@ -63,7 +64,7 @@
 #' fresh_list <- list_datasets(cache_hours = 0)
 #' 
 #' # Use specific metadata version
-#' datasets_v1 <- list_datasets(metadata_version = "v1.0.0")
+#' datasets_v1 <- list_datasets(metadata_version = "1.0.0")
 #' 
 #' # Use dataset IDs with get_dataset()
 #' dataset <- get_dataset(datasets$dataset_id[1])

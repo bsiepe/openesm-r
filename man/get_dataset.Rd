@@ -55,12 +55,12 @@ containing a named list of \code{openesm_dataset} objects.
 }
 \description{
 Downloads one or more Experience Sampling Method (ESM) datasets from the
-OpenESM repository hosted on Zenodo. Returns an S3 object containing the
+openESM repository hosted on Zenodo. Returns an S3 object containing the
 dataset and associated metadata.
 }
 \details{
 This function downloads ESM datasets from Zenodo using DOIs stored in the
-OpenESM metadata repository. Datasets are cached locally to avoid repeated
+openESM metadata repository. Datasets are cached locally to avoid repeated
 downloads. Use \code{force_download = TRUE} to refresh cached data.
 
 The function handles both individual datasets and batch downloads. When

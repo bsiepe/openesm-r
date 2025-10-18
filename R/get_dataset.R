@@ -1,7 +1,7 @@
 #' Download ESM dataset(s) from OpenESM repository
 #'
 #' Downloads one or more Experience Sampling Method (ESM) datasets from the
-#' OpenESM repository hosted on Zenodo. Returns an S3 object containing the
+#' openESM repository hosted on Zenodo. Returns an S3 object containing the
 #' dataset and associated metadata.
 #'
 #' @param dataset_id Character string or vector of dataset IDs. Use
@@ -35,7 +35,7 @@
 #'
 #' @details
 #' This function downloads ESM datasets from Zenodo using DOIs stored in the
-#' OpenESM metadata repository. Datasets are cached locally to avoid repeated
+#' openESM metadata repository. Datasets are cached locally to avoid repeated
 #' downloads. Use \code{force_download = TRUE} to refresh cached data.
 #'
 #' The function handles both individual datasets and batch downloads. When
