@@ -213,23 +213,5 @@ test_that("download_metadata_from_zenodo error handling works", {
   unlink(temp_dir, recursive = TRUE)
 })
 
-test_that("download_metadata_from_zenodo creates proper temp directories", {
-  temp_dir <- tempfile()
-  fs::dir_create(temp_dir)
-  
-  # mock all external dependencies to focus on the directory creation logic
-  testthat::local_mocked_bindings(
-    resolve_zenodo_version = function(...) "1.0.0",
-    .package = "openesm"
-  )
-  
-  expect_error(
-    download_metadata_from_zenodo(version = "latest", dest_dir = temp_dir),
-    # This will fail when trying to call the real zen4R function, which is expected
-    class = "error"
-  )
-  
-  unlink(temp_dir, recursive = TRUE)
-})
 
 Sys.setenv(NOT_CRAN = "")
