@@ -10,18 +10,40 @@
 #' @keywords internal
 #' @importFrom zen4R get_versions
 #' @importFrom dplyr arrange desc slice pull
-#' @importFrom cli cli_abort
+#' @importFrom cli cli_abort cli_alert_warning
 #' @noRd
 resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FALSE) {
-  data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
-
-  if (nrow(data_versions) == 0) {
-    cli::cli_abort("No versions found for DOI {zenodo_doi}")
+  # retry logic for flaky zenodo api calls
+  max_attempts <- 3
+  attempt <- 1
+  data_versions <- NULL
+  
+  while (attempt <= max_attempts) {
+    tryCatch({
+      data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
+      
+      # verify we got valid data
+      if (is.data.frame(data_versions) && nrow(data_versions) > 0) {
+        break
+      }
+    }, error = function(e) {
+      if (attempt < max_attempts) {
+        if (!isTRUE(getOption("openesm.quiet"))) {
+          cli::cli_alert_warning("Zenodo API call failed (attempt {attempt}/{max_attempts}), retrying...")
+        }
+        Sys.sleep(0.5 * attempt)  # backoff time
+      }
+    })
+    attempt <- attempt + 1
+  }
+  
+  if (is.null(data_versions) || nrow(data_versions) == 0) {
+    cli::cli_abort("Failed to retrieve versions from Zenodo for DOI {zenodo_doi} after {max_attempts} attempts")
   }
 
   if (version == "latest") {
     latest_version_tag <- data_versions |>
-      dplyr::arrange(dplyr::desc(version)) |>
+      dplyr::arrange(dplyr::desc(date)) |>
       dplyr::slice(1) |>
       dplyr::pull(version)
     return(latest_version_tag)
@@ -58,7 +80,32 @@ download_from_zenodo <- function(zenodo_doi,
                                  dest_path = NULL) {
 
   # get available versions to find the record ID for the specific version
-  data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
+  # use retry logic for api stability
+  max_attempts <- 3
+  attempt <- 1
+  data_versions <- NULL
+  
+  while (attempt <= max_attempts) {
+    tryCatch({
+      data_versions <- suppressMessages(zen4R::get_versions(zenodo_doi, sandbox = sandbox))
+      
+      if (is.data.frame(data_versions) && nrow(data_versions) > 0) {
+        break
+      }
+    }, error = function(e) {
+      if (attempt < max_attempts) {
+        if (!isTRUE(getOption("openesm.quiet"))) {
+          cli::cli_alert_warning("Zenodo API call failed (attempt {attempt}/{max_attempts}), retrying...")
+        }
+        Sys.sleep(0.5 * attempt)
+      }
+    })
+    attempt <- attempt + 1
+  }
+  
+  if (is.null(data_versions) || nrow(data_versions) == 0) {
+    cli::cli_abort("Failed to retrieve versions from Zenodo for DOI {zenodo_doi} after {max_attempts} attempts")
+  }
 
   version_match <- data_versions[data_versions$version == version, ]
   if (nrow(version_match) == 0) {

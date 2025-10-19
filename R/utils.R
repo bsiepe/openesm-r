@@ -284,11 +284,12 @@ process_specific_metadata <- function(raw_meta) {
 
 #' Download and extract metadata ZIP from Zenodo
 #'
-#' Downloads the metadata ZIP file from Zenodo and extracts the datasets.json file.
+#' Downloads the metadata ZIP file from Zenodo and extracts all contents
+#' including datasets.json and individual dataset metadata folders.
 #'
 #' @param version Character string specifying the metadata version
 #' @param dest_dir Character string with destination directory for extracted files
-#' @return Character string with path to extracted datasets.json file
+#' @return Character string with path to destination directory containing all extracted metadata
 #' @keywords internal
 #' @importFrom zen4R get_versions
 #' @importFrom cli cli_abort
@@ -299,11 +300,37 @@ download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
   # metadata repository DOI
   metadata_doi <- "10.5281/zenodo.17182171"
   
-  # resolve version using existing zenodo utilities
+  # resolve version using existing zenodo utilities (has built-in retry logic)
   resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = FALSE)
   
   # get the specific version record to find the files
-  data_versions <- suppressMessages(zen4R::get_versions(metadata_doi, sandbox = FALSE))
+  # use retry logic for api stability
+  max_attempts <- 3
+  attempt <- 1
+  data_versions <- NULL
+  
+  while (attempt <= max_attempts) {
+    tryCatch({
+      data_versions <- suppressMessages(zen4R::get_versions(metadata_doi, sandbox = FALSE))
+      
+      if (is.data.frame(data_versions) && nrow(data_versions) > 0) {
+        break
+      }
+    }, error = function(e) {
+      if (attempt < max_attempts) {
+        if (!isTRUE(getOption("openesm.quiet"))) {
+          cli::cli_alert_warning("Zenodo API call failed (attempt {attempt}/{max_attempts}), retrying...")
+        }
+        Sys.sleep(0.5 * attempt)
+      }
+    })
+    attempt <- attempt + 1
+  }
+  
+  if (is.null(data_versions) || nrow(data_versions) == 0) {
+    cli::cli_abort("Failed to retrieve versions from Zenodo for metadata repository after {max_attempts} attempts")
+  }
+  
   version_record <- data_versions[data_versions$version == resolved_version, ]
   
   if (nrow(version_record) == 0) {
@@ -343,7 +370,7 @@ download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
   zip_path <- file.path(dest_dir, "metadata.zip")
   download_with_progress(download_url, zip_path)
   
-  # extract all files to a temporary subdirectory
+  # extract to temporary directory to inspect structure
   temp_extract_dir <- file.path(dest_dir, "temp_extract")
   if (fs::dir_exists(temp_extract_dir)) {
     unlink(temp_extract_dir, recursive = TRUE)
@@ -351,24 +378,46 @@ download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
   
   utils::unzip(zip_path, exdir = temp_extract_dir, overwrite = TRUE)
   
-  # find the datasets.json file in the extracted structure
-  datasets_json_files <- list.files(temp_extract_dir, 
-                                    pattern = "^datasets\\.json$", 
-                                    recursive = TRUE, 
-                                    full.names = TRUE)
+  # find the root folder in the extracted archive (typically openesm-metadata-main or similar)
+  extracted_contents <- list.dirs(temp_extract_dir, recursive = FALSE, full.names = TRUE)
   
-  if (length(datasets_json_files) == 0) {
-    cli::cli_abort("datasets.json not found in downloaded ZIP file")
+  if (length(extracted_contents) == 0) {
+    cli::cli_abort("No contents found in extracted ZIP file")
   }
   
-  # move the datasets.json file to the final location
-  final_path <- file.path(dest_dir, "datasets.json")
-  file.copy(datasets_json_files[1], final_path, overwrite = TRUE)
+  # there's a single root folder in the ZIP
+  root_folder <- extracted_contents[1]
+  
+  # find datasets.json to verify structure
+  datasets_json_path <- file.path(root_folder, "datasets.json")
+  if (!file.exists(datasets_json_path)) {
+    # try to find it recursively
+    datasets_json_files <- list.files(temp_extract_dir, 
+                                      pattern = "^datasets\\.json$", 
+                                      recursive = TRUE, 
+                                      full.names = TRUE)
+    if (length(datasets_json_files) == 0) {
+      cli::cli_abort("datasets.json not found in downloaded ZIP file")
+    }
+    root_folder <- dirname(datasets_json_files[1])
+  }
+  
+  # move all contents from root folder to dest_dir
+  all_items <- list.files(root_folder, full.names = TRUE, all.files = TRUE, no.. = TRUE)
+  for (item in all_items) {
+    item_name <- basename(item)
+    dest_item <- file.path(dest_dir, item_name)
+    # remove existing if present
+    if (file.exists(dest_item)) {
+      unlink(dest_item, recursive = TRUE)
+    }
+    file.rename(item, dest_item)
+  }
   
   # clean up temporary files
   unlink(temp_extract_dir, recursive = TRUE)
   file.remove(zip_path)
   
-  return(final_path)
+  return(dest_dir)
 }
 

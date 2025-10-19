@@ -102,9 +102,10 @@ list_datasets <- function(cache_hours = 24,
     }
     
     # download and extract from Zenodo using resolved version
-    extracted_path <- download_metadata_from_zenodo(resolved_version, version_dir)
+    # this now returns the base directory containing all metadata
+    base_dir <- download_metadata_from_zenodo(resolved_version, version_dir)
     
-    # the extracted file should be our index_path
+    # verify datasets.json exists
     if (!fs::file_exists(index_path)) {
       cli::cli_abort("Failed to extract datasets.json from Zenodo metadata")
     }

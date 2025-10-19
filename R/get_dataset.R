@@ -116,25 +116,24 @@ get_dataset <- function(dataset_id,
   
   author_lower <- tolower(dataset_info$first_author)
   
-  # get metadata from github
-  metadata_gh_folder <- paste0(dataset_info$dataset_id, "_", author_lower, "/")
-  metadata_gh_path <- paste0(dataset_info$dataset_id,
-                             "_",
-                             author_lower,
-                             "_metadata.json")
-  metadata_url <- paste0(
-    "https://raw.githubusercontent.com/bsiepe/openesm-metadata/main/datasets/",
-    metadata_gh_folder,
-    metadata_gh_path
-  )
-  # cache metadata
-  local_metadata_path <- get_cache_path(dataset_id,
-                                        filename = metadata_gh_path,
-                                        type = "metadata",
-                                        version = "latest") # metadata not version specific
+  # construct path to individual metadata file in cached Zenodo structure
+  metadata_filename <- paste0(dataset_id, "_", author_lower, "_metadata.json")
+  metadata_folder <- paste0(dataset_id, "_", author_lower)
   
+  # metadata is versioned with the metadata catalog version, not dataset version
+  metadata_base_dir <- file.path(get_cache_dir("metadata"), resolved_metadata_version)
+  local_metadata_path <- file.path(metadata_base_dir, "datasets", metadata_folder, metadata_filename)
+  
+  # if metadata doesn't exist or force_download is TRUE, ensure we have the full metadata archive
   if (!fs::file_exists(local_metadata_path) || force_download) {
-    download_with_progress(metadata_url, local_metadata_path)
+    # trigger download by calling list_datasets, which will download and extract if needed
+    msg_info("Downloading metadata catalog version {.val {resolved_metadata_version}}")
+    list_datasets(cache_hours = 0, metadata_version = resolved_metadata_version)
+    
+    # verify metadata file now exists
+    if (!fs::file_exists(local_metadata_path)) {
+      cli::cli_abort("Metadata file not found for dataset {.val {dataset_id}} in version {.val {resolved_metadata_version}}")
+    }
   }
   
   specific_meta_raw <- read_json_safe(local_metadata_path)
