@@ -1,4 +1,4 @@
-#' Download ESM dataset(s) from OpenESM repository
+#' Download ESM dataset(s) from openESM repository
 #'
 #' Downloads one or more Experience Sampling Method (ESM) datasets from the
 #' openESM repository hosted on Zenodo. Returns an S3 object containing the

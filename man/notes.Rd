@@ -2,7 +2,7 @@
 % Please edit documentation in R/generics.R
 \name{notes}
 \alias{notes}
-\title{Additional notes for OpenESM datasets}
+\title{Additional notes for openESM datasets}
 \usage{
 notes(x, ...)
 }
@@ -15,7 +15,7 @@ notes(x, ...)
 Additional notes and information about the dataset(s)
 }
 \description{
-Additional notes for OpenESM datasets
+Additional notes for openESM datasets
 }
 \examples{
 \dontrun{

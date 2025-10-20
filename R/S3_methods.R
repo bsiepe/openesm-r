@@ -23,7 +23,7 @@ print.openesm_dataset <- function(x, ...) {
     )
   ))
 
-  cli::cli_h1("OpenESM Dataset: {.val {x$dataset_id}}")
+  cli::cli_h1("openESM Dataset: {.val {x$dataset_id}}")
 
   meta <- x$metadata
 
@@ -69,7 +69,7 @@ print.openesm_dataset_list <- function(x, ...) {
   ))
 
   num_datasets <- length(x)
-  cli::cli_h1("Collection of {num_datasets} OpenESM Dataset{?s}")
+  cli::cli_h1("Collection of {num_datasets} openESM Dataset{?s}")
 
   # show the names of the first few datasets
   max_show <- 5
@@ -129,7 +129,7 @@ cite.openesm_dataset <- function(x, format = "bibtex", ...) {
   
   
   cli::cli_text("To cite this dataset in publications, please use:")
-  cli::cli_text("")  # Empty line
+  cli::cli_text("")  # empty line
   
   # Print each citation as code blocks for better formatting
   for (i in seq_along(citations)) {

@@ -20,3 +20,4 @@
 ^.*\.Rproj$
 ^LICENSE\.md$
 openesm-manual.tex^$
+^CRAN-SUBMISSION$

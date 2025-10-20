@@ -2,7 +2,7 @@
 % Please edit documentation in R/generics.R
 \name{cite}
 \alias{cite}
-\title{Citation information for OpenESM datasets}
+\title{Citation information for openESM datasets}
 \usage{
 cite(x, ...)
 }
@@ -15,7 +15,7 @@ cite(x, ...)
 Citation information for the dataset(s)
 }
 \description{
-Citation information for OpenESM datasets
+Citation information for openESM datasets
 }
 \examples{
 \dontrun{

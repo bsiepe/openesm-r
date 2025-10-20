@@ -6,13 +6,13 @@
 \alias{openesm-package}
 \title{openesm: Access the Open Experience Sampling Method Database}
 \description{
-Provides programmatic access to the Open Experience Sampling Method (openESM) database, a collection of harmonized experience sampling datasets. The package enables researchers to discover, download, and work with the datasets while ensuring proper citation and license compliance.
+Provides programmatic access to the Open Experience Sampling Method ('openESM') database (\url{https://openesmdata.org}), a collection of harmonized experience sampling datasets. The package enables researchers to discover, download, and work with the datasets while ensuring proper citation and license compliance.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/bsiepe/openesm-r}
-  \item Report bugs at \url{https://github.com/bsiepe/openesm-r/issues}
+  \item \url{https://github.com/openesm-project/openesm-r}
+  \item Report bugs at \url{https://github.com/openesm-project/openesm-r/issues}
 }
 
 }

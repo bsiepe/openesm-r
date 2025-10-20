@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_dataset.R
 \name{get_dataset}
 \alias{get_dataset}
-\title{Download ESM dataset(s) from OpenESM repository}
+\title{Download ESM dataset(s) from openESM repository}
 \usage{
 get_dataset(
   dataset_id,
