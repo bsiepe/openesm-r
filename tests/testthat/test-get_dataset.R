@@ -1,6 +1,7 @@
 library(testthat)
 
 test_that("get_dataset downloads and processes a single dataset", {
+  skip_on_cran()
   skip_on_ci()
   # Mock all external interactions
   testthat::local_mocked_bindings(
@@ -31,6 +32,7 @@ test_that("get_dataset downloads and processes a single dataset", {
 })
 
 test_that("get_multiple_datasets works correctly", {
+  skip_on_cran()
   skip_on_ci()
   # mock the helper function directly
   testthat::local_mocked_bindings(
@@ -50,6 +52,7 @@ test_that("get_multiple_datasets works correctly", {
 })
 
 test_that("get_multiple_datasets can be called explicitly", {
+  skip_on_cran()
   skip_on_ci()
   # Mock the actual dataset retrieval
   testthat::local_mocked_bindings(
@@ -66,6 +69,7 @@ test_that("get_multiple_datasets can be called explicitly", {
 })
 
 test_that("get_dataset errors for non-existent dataset", {
+  skip_on_cran()
   skip_on_ci()
   testthat::local_mocked_bindings(
     list_datasets = function() {

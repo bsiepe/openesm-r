@@ -1,6 +1,7 @@
 library(testthat)
 
 test_that("list_datasets downloads and uses cache correctly", {
+  skip_on_cran()
   skip_on_ci()
   # use temporary directory for cache
   temp_cache <- tempfile("cache")

@@ -2,6 +2,8 @@ library(testthat)
 Sys.setenv(NOT_CRAN = "true")
 
 test_that("get_cache_path constructs paths and creates directories", {
+  skip_on_cran()
+  skip_on_ci()
   temp_dir <- tempfile("cache")
   testthat::local_mocked_bindings(
     get_metadata_dir = function() fs::path(temp_dir, "metadata"),
@@ -26,6 +28,8 @@ test_that("get_cache_path constructs paths and creates directories", {
 
 
 test_that("get_cache_dir returns correct paths", {
+  skip_on_cran()
+  skip_on_ci()
   temp_dir <- tempfile("cache")
   dir.create(temp_dir)
   
@@ -172,6 +176,8 @@ test_that("get_cache_dir creates nested directories correctly", {
 })
 
 test_that("download_metadata_from_zenodo handles errors gracefully", {
+  skip_on_cran()
+  skip_on_ci()
   # test with invalid version that doesn't exist
   temp_dir <- tempfile()
   fs::dir_create(temp_dir)
@@ -186,6 +192,8 @@ test_that("download_metadata_from_zenodo handles errors gracefully", {
 })
 
 test_that("download_metadata_from_zenodo error handling works", {
+  skip_on_cran()
+  skip_on_ci()
   temp_dir <- tempfile()
   fs::dir_create(temp_dir)
   

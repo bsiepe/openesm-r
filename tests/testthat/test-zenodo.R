@@ -5,6 +5,8 @@ Sys.setenv(NOT_CRAN = "true")
 test_doi <- "10.5072/zenodo.308201"
 
 test_that("resolve_zenodo_version works with a live sandbox request", {
+  skip_on_cran()
+  skip_on_ci()
   # test resolving the latest version
   latest_version <- resolve_zenodo_version(test_doi, version = "latest", sandbox = TRUE)
   expect_equal(latest_version, "1.0.2")
@@ -21,6 +23,8 @@ test_that("resolve_zenodo_version works with a live sandbox request", {
 })
 
 test_that("download_from_zenodo works with a live sandbox request", {
+  skip_on_cran()
+  skip_on_ci()
   # create a temporary file path for the download
   temp_dest <- tempfile(fileext = ".tsv")
   
