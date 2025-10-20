@@ -1,9 +1,6 @@
 library(testthat)
-Sys.setenv(NOT_CRAN = "true")
 
 test_that("get_cache_path constructs paths and creates directories", {
-  skip_on_cran()
-  skip_on_ci()
   temp_dir <- tempfile("cache")
   testthat::local_mocked_bindings(
     get_metadata_dir = function() fs::path(temp_dir, "metadata"),
@@ -221,5 +218,3 @@ test_that("download_metadata_from_zenodo error handling works", {
   unlink(temp_dir, recursive = TRUE)
 })
 
-
-Sys.setenv(NOT_CRAN = "")

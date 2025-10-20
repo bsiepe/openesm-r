@@ -1,5 +1,5 @@
 library(testthat)
-Sys.setenv(NOT_CRAN = "true")
+
 # use a real, public concept DOI from the Zenodo sandbox for testing
 # this record has multiple versions
 test_doi <- "10.5072/zenodo.308201"
@@ -47,4 +47,3 @@ test_that("download_from_zenodo works with a live sandbox request", {
   unlink(temp_dest)
 })
 
-Sys.setenv(NOT_CRAN = "")
