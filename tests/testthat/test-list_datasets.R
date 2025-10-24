@@ -23,11 +23,11 @@ test_that("list_datasets downloads and uses cache correctly", {
         file.path(temp_cache, type)
       }
     },
-    resolve_zenodo_version = function(doi, version, sandbox = FALSE) {
+    resolve_zenodo_version = function(doi, version, sandbox = FALSE, max_attempts = 15) {
       # return a mock version string
       "v1.0.0"
     },
-    download_metadata_from_zenodo = function(version, dest_dir) {
+    download_metadata_from_zenodo = function(version, dest_dir, max_attempts = 15) {
       download_called <<- download_called + 1
       # simulate download by writing the string to the path
       index_path <- file.path(dest_dir, "datasets.json")

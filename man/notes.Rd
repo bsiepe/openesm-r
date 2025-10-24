@@ -18,7 +18,7 @@ Additional notes and information about the dataset(s)
 Additional notes for openESM datasets
 }
 \examples{
-\dontrun{
+\donttest{
 # Get notes for a dataset
 dataset <- get_dataset("0001")
 notes(dataset)

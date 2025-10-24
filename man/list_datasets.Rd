@@ -4,7 +4,7 @@
 \alias{list_datasets}
 \title{List available ESM datasets from openESM repository}
 \usage{
-list_datasets(cache_hours = 24, metadata_version = "latest")
+list_datasets(cache_hours = 24, metadata_version = "latest", max_attempts = 15)
 }
 \arguments{
 \item{cache_hours}{Numeric. Number of hours to consider the cached dataset
@@ -12,6 +12,8 @@ index valid. Default is 24. Set to 0 to force fresh download.}
 
 \item{metadata_version}{Character string specifying the metadata catalog version.
 Default is "latest" which downloads the most recent version.}
+
+\item{max_attempts}{Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.}
 }
 \value{
 A tibble with one row per dataset containing:
@@ -57,7 +59,7 @@ The returned tibble can be filtered and explored to identify datasets of
 interest before downloading with \code{\link[=get_dataset]{get_dataset()}}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Get list of all available datasets
 datasets <- list_datasets()
 

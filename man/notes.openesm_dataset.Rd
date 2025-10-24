@@ -18,7 +18,7 @@ Character vector with dataset notes, returned invisibly.
 Get additional notes for dataset
 }
 \examples{
-\dontrun{
+\donttest{
 dataset <- get_dataset("0001")
 notes(dataset)
 }

@@ -7,7 +7,7 @@
 #' @return Invisibly returns the original object.
 #' @importFrom cli cli_h1 cli_text cli_alert_info cli_bullets cli_div
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' dataset <- get_dataset("0001")
 #' print(dataset)
 #' }
@@ -52,7 +52,7 @@ print.openesm_dataset <- function(x, ...) {
 #' @return Invisibly returns the original object.
 #' @importFrom cli cli_h1 cli_text cli_bullets cli_alert_info cli_div style_bold
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' datasets <- get_dataset(c("00011", "00012"))
 #' print(datasets)
 #' }
@@ -96,7 +96,7 @@ print.openesm_dataset_list <- function(x, ...) {
 #' @param ... Additional arguments (currently unused).
 #' @return Character string with citation information, returned invisibly.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' dataset <- get_dataset("0001")
 #' cite(dataset)
 #' }
@@ -151,7 +151,7 @@ cite.openesm_dataset <- function(x, format = "bibtex", ...) {
 #' @param ... Additional arguments (currently unused).
 #' @return Character vector with dataset notes, returned invisibly.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' dataset <- get_dataset("0001")
 #' notes(dataset)
 #' }

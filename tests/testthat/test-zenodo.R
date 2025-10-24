@@ -8,16 +8,16 @@ test_that("resolve_zenodo_version works with a live sandbox request", {
   skip_on_cran()
   skip_on_ci()
   # test resolving the latest version
-  latest_version <- resolve_zenodo_version(test_doi, version = "latest", sandbox = TRUE)
+  latest_version <- resolve_zenodo_version(test_doi, version = "latest", sandbox = TRUE, max_attempts = 15)
   expect_equal(latest_version, "1.0.2")
   
   # test resolving a specific, existing version
-  specific_version <- resolve_zenodo_version(test_doi, version = "1.0.0", sandbox = TRUE)
+  specific_version <- resolve_zenodo_version(test_doi, version = "1.0.0", sandbox = TRUE, max_attempts = 15)
   expect_equal(specific_version, "1.0.0")
   
   # test error for a non-existent version
   expect_error(
-    resolve_zenodo_version(test_doi, version = "v9.9.9", sandbox = TRUE),
+    resolve_zenodo_version(test_doi, version = "v9.9.9", sandbox = TRUE, max_attempts = 15),
     "Version v9.9.9 not found"
   )
 })
@@ -35,7 +35,8 @@ test_that("download_from_zenodo works with a live sandbox request", {
     author_name = "test",
     version = "1.0.0",
     sandbox = TRUE,
-    dest_path = temp_dest
+    dest_path = temp_dest,
+    max_attempts = 15
   )
   
   # check that the file was downloaded and the path is correct

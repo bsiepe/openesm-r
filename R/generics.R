@@ -3,7 +3,7 @@
 #' @param ... Additional arguments passed to methods
 #' @return Citation information for the dataset(s)
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Get citation for a dataset
 #' dataset <- get_dataset("0001")
 #' cite(dataset)
@@ -18,7 +18,7 @@ cite <- function(x, ...) {
 #' @param ... Additional arguments passed to methods
 #' @return Additional notes and information about the dataset(s)
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Get notes for a dataset
 #' dataset <- get_dataset("0001")
 #' notes(dataset)

@@ -18,6 +18,7 @@
 #'   for testing. Default is \code{FALSE}.
 #' @param quiet Logical. If \code{TRUE}, suppresses informational messages.
 #'   Default is \code{FALSE}.
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.
 #' @param ... Additional arguments passed to [list_datasets()].
 #' This includes \code{metadata_version} to specify the metadata catalog version.
 #'
@@ -50,7 +51,7 @@
 #' @importFrom fs file_exists path
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # List available datasets first
 #' available <- list_datasets()
 #' head(available)
@@ -90,10 +91,11 @@ get_dataset <- function(dataset_id,
                         force_download = FALSE,
                         sandbox = FALSE,
                         quiet = FALSE,
+                        max_attempts = 15,
                         ...) {
   # handle multiple datasets
   if (length(dataset_id) > 1) {
-    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox, ...))
+    return(get_multiple_datasets(dataset_id, version, cache, force_download, sandbox, max_attempts, ...))
   }
   
   # remove all non-numeric characters from dataset_id
@@ -103,7 +105,8 @@ get_dataset <- function(dataset_id,
   metadata_doi <- "10.5281/zenodo.17182171"
   dots <- list(...)
   metadata_version_requested <- dots$metadata_version %||% "latest"
-  resolved_metadata_version <- resolve_zenodo_version(metadata_doi, metadata_version_requested, sandbox = FALSE)
+  resolved_metadata_version <- resolve_zenodo_version(metadata_doi, metadata_version_requested, sandbox = FALSE, max_attempts = max_attempts)
+  
   # get dataset catalog
   all_datasets <- list_datasets(...)
   if (!dataset_id %in% all_datasets$dataset_id) {
@@ -128,7 +131,7 @@ get_dataset <- function(dataset_id,
   if (!fs::file_exists(local_metadata_path) || force_download) {
     # trigger download by calling list_datasets, which will download and extract if needed
     msg_info("Downloading metadata catalog version {.val {resolved_metadata_version}}")
-    list_datasets(cache_hours = 0, metadata_version = resolved_metadata_version)
+    list_datasets(cache_hours = 0, metadata_version = resolved_metadata_version, max_attempts = max_attempts)
     
     # verify metadata file now exists
     if (!fs::file_exists(local_metadata_path)) {
@@ -146,7 +149,7 @@ get_dataset <- function(dataset_id,
   }
   
   # resolve actual version if "latest" is requested
-  actual_version <- resolve_zenodo_version(zenodo_doi, version, sandbox)
+  actual_version <- resolve_zenodo_version(zenodo_doi, version, sandbox, max_attempts = max_attempts)
   
   # determine cache/destination path
   filename <- paste0(dataset_id, "_", author_lower, "_ts.tsv")
@@ -169,7 +172,8 @@ get_dataset <- function(dataset_id,
       author_name = author_lower,
       version = actual_version,
       sandbox = sandbox,
-      dest_path = local_data_path
+      dest_path = local_data_path,
+      max_attempts = max_attempts
     )
   }
   
@@ -215,6 +219,7 @@ get_dataset <- function(dataset_id,
 #'  cached version exists. Default is \code{FALSE}.
 #' @param sandbox Logical. If \code{TRUE}, uses Zenodo sandbox environment
 #'    for testing. Default is \code{FALSE}.
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls.
 #' @keywords internal
 #' @noRd
 get_multiple_datasets <- function(dataset_ids,
@@ -222,6 +227,7 @@ get_multiple_datasets <- function(dataset_ids,
                                   cache,
                                   force_download,
                                   sandbox,
+                                  max_attempts,
                                   ...) {
   result <- list()
   for (id in dataset_ids) {
@@ -233,6 +239,7 @@ get_multiple_datasets <- function(dataset_ids,
       force_download = force_download,
       sandbox = sandbox,
       quiet = TRUE,
+      max_attempts = max_attempts,
       ...
     )
   }

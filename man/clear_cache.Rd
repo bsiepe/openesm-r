@@ -17,9 +17,11 @@ Invisibly returns \code{NULL}.
 Removes all cached openesm data from your local machine.
 }
 \examples{
-\dontrun{
+\donttest{
 # clear cache with confirmation prompt
-clear_cache()
+if(interactive()) {
+ clear_cache()
+}
 
 # force clear without confirmation
 clear_cache(force = TRUE)

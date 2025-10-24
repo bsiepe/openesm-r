@@ -20,7 +20,7 @@ S3 Methods for openesm objects
 Print method for openesm_dataset
 }
 \examples{
-\dontrun{
+\donttest{
 dataset <- get_dataset("0001")
 print(dataset)
 }

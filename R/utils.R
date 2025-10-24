@@ -60,9 +60,11 @@ cache_info <- function() {
 #'   deleting. Default is \code{FALSE}.
 #' @return Invisibly returns \code{NULL}.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # clear cache with confirmation prompt
-#' clear_cache()
+#' if(interactive()) {
+#'  clear_cache()
+#' }
 #' 
 #' # force clear without confirmation
 #' clear_cache(force = TRUE)
@@ -289,29 +291,28 @@ process_specific_metadata <- function(raw_meta) {
 #'
 #' @param version Character string specifying the metadata version
 #' @param dest_dir Character string with destination directory for extracted files
+#' @param sandbox Logical, whether to use Zenodo sandbox. Default is \code{FALSE}
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls. Default is 15
 #' @return Character string with path to destination directory containing all extracted metadata
 #' @keywords internal
 #' @importFrom zen4R get_versions
-#' @importFrom cli cli_abort
+#' @importFrom cli cli_abort cli_alert_warning
 #' @importFrom httr2 request req_perform resp_body_json resp_status
 #' @importFrom fs dir_exists
 #' @noRd
-download_metadata_from_zenodo <- function(version = "latest", dest_dir) {
-  # metadata repository DOI
+download_metadata_from_zenodo <- function(version = "latest", dest_dir, sandbox = FALSE, max_attempts = 15) {
   metadata_doi <- "10.5281/zenodo.17182171"
   
-  # resolve version using existing zenodo utilities (has built-in retry logic)
-  resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = FALSE)
+  # resolve version using existing zenodo utilities with retry logic
+  resolved_version <- resolve_zenodo_version(metadata_doi, version, sandbox = sandbox, max_attempts = max_attempts)
   
-  # get the specific version record to find the files
-  # use retry logic for api stability
-  max_attempts <- 3
+  # get versions with retry logic
   attempt <- 1
   data_versions <- NULL
   
   while (attempt <= max_attempts) {
     tryCatch({
-      data_versions <- suppressMessages(zen4R::get_versions(metadata_doi, sandbox = FALSE))
+      data_versions <- suppressMessages(zen4R::get_versions(metadata_doi, sandbox = sandbox))
       
       if (is.data.frame(data_versions) && nrow(data_versions) > 0) {
         break

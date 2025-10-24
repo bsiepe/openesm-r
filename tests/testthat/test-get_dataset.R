@@ -5,15 +5,15 @@ test_that("get_dataset downloads and processes a single dataset", {
   skip_on_ci()
   # Mock all external interactions
   testthat::local_mocked_bindings(
-    list_datasets = function() {
+    list_datasets = function(cache_hours = 24, metadata_version = "latest", max_attempts = 15) {
       # parse the JSON string into a list before processing
       json_string <- create_mock_dataset_json()
       raw_list <- jsonlite::fromJSON(json_string, simplifyVector = FALSE)
       # Now call the processor with the correct list object
       openesm:::process_raw_datasets_list(raw_list)
     },
-    resolve_zenodo_version = function(...) "1.0.0",
-    download_from_zenodo = function(..., dest_path) {
+    resolve_zenodo_version = function(doi, version, sandbox, max_attempts = 15) "1.0.0",
+    download_from_zenodo = function(..., dest_path, max_attempts = 15) {
       # Simulate the downloaded file
       write.csv(data.frame(x = 1:5), dest_path)
     },
@@ -72,12 +72,12 @@ test_that("get_dataset errors for non-existent dataset", {
   skip_on_cran()
   skip_on_ci()
   testthat::local_mocked_bindings(
-    list_datasets = function() {
+    list_datasets = function(cache_hours = 24, metadata_version = "latest", max_attempts = 15) {
       json_string <- create_mock_dataset_json()
       raw_list <- jsonlite::fromJSON(json_string, simplifyVector = FALSE)
       openesm:::process_raw_datasets_list(raw_list)
     },
-    resolve_zenodo_version = function(doi, version, sandbox) {
+    resolve_zenodo_version = function(doi, version, sandbox, max_attempts = 15) {
       return("1.0.0")  # Mock successful version resolution
     },
     .package = "openesm"

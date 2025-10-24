@@ -12,6 +12,7 @@ get_dataset(
   force_download = FALSE,
   sandbox = FALSE,
   quiet = FALSE,
+  max_attempts = 15,
   ...
 )
 }
@@ -36,6 +37,8 @@ for testing. Default is \code{FALSE}.}
 
 \item{quiet}{Logical. If \code{TRUE}, suppresses informational messages.
 Default is \code{FALSE}.}
+
+\item{max_attempts}{Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.}
 
 \item{...}{Additional arguments passed to \code{\link[=list_datasets]{list_datasets()}}.
 This includes \code{metadata_version} to specify the metadata catalog version.}
@@ -67,7 +70,7 @@ The function handles both individual datasets and batch downloads. When
 downloading multiple datasets, progress is shown for each download.
 }
 \examples{
-\dontrun{
+\donttest{
 # List available datasets first
 available <- list_datasets()
 head(available)

@@ -18,7 +18,7 @@ Invisibly returns the original object.
 Print method for a list of openesm_dataset objects
 }
 \examples{
-\dontrun{
+\donttest{
 datasets <- get_dataset(c("00011", "00012"))
 print(datasets)
 }

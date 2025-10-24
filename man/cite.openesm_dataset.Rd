@@ -20,7 +20,7 @@ Character string with citation information, returned invisibly.
 Get citation information for dataset
 }
 \examples{
-\dontrun{
+\donttest{
 dataset <- get_dataset("0001")
 cite(dataset)
 }

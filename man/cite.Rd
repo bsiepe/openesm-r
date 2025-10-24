@@ -18,7 +18,7 @@ Citation information for the dataset(s)
 Citation information for openESM datasets
 }
 \examples{
-\dontrun{
+\donttest{
 # Get citation for a dataset
 dataset <- get_dataset("0001")
 cite(dataset)

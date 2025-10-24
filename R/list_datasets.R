@@ -8,6 +8,7 @@
 #'   index valid. Default is 24. Set to 0 to force fresh download.
 #' @param metadata_version Character string specifying the metadata catalog version. 
 #'   Default is "latest" which downloads the most recent version.
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.
 #'
 #' @return A tibble with one row per dataset containing:
 #'   \itemize{
@@ -56,7 +57,7 @@
 #' @importFrom cli cli_abort
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Get list of all available datasets
 #' datasets <- list_datasets()
 #' 
@@ -72,10 +73,11 @@
 #'
 #' @export
 list_datasets <- function(cache_hours = 24,
-                          metadata_version = "latest") {
+                          metadata_version = "latest",
+                          max_attempts = 15) {
   # resolve the version first to get the actual version tag
   metadata_doi <- "10.5281/zenodo.17182171"
-  resolved_version <- resolve_zenodo_version(metadata_doi, metadata_version, sandbox = FALSE)
+  resolved_version <- resolve_zenodo_version(metadata_doi, metadata_version, sandbox = FALSE, max_attempts = max_attempts)
   
   # define the path to the cached metadata index file using resolved version
   metadata_dir <- get_cache_dir("metadata")
@@ -103,7 +105,7 @@ list_datasets <- function(cache_hours = 24,
     
     # download and extract from Zenodo using resolved version
     # this now returns the base directory containing all metadata
-    base_dir <- download_metadata_from_zenodo(resolved_version, version_dir)
+    base_dir <- download_metadata_from_zenodo(resolved_version, version_dir, max_attempts = max_attempts)
     
     # verify datasets.json exists
     if (!fs::file_exists(index_path)) {

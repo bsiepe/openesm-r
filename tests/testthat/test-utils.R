@@ -172,49 +172,5 @@ test_that("get_cache_dir creates nested directories correctly", {
   expect_true(fs::dir_exists(cache_dir))
 })
 
-test_that("download_metadata_from_zenodo handles errors gracefully", {
-  skip_on_cran()
-  skip_on_ci()
-  # test with invalid version that doesn't exist
-  temp_dir <- tempfile()
-  fs::dir_create(temp_dir)
-  
-  # this should fail for a version that doesn't exist
-  expect_error(
-    download_metadata_from_zenodo(version = "999.999.999", dest_dir = temp_dir),
-    "Version.*not found"
-  )
-  
-  unlink(temp_dir, recursive = TRUE)
-})
 
-test_that("download_metadata_from_zenodo error handling works", {
-  skip_on_cran()
-  skip_on_ci()
-  temp_dir <- tempfile()
-  fs::dir_create(temp_dir)
-  
-  # Test that the function exists and has proper structure
-  expect_true(exists("download_metadata_from_zenodo"))
-  expect_type(download_metadata_from_zenodo, "closure")
-  
-  # Test error handling with mocked functions
-  testthat::local_mocked_bindings(
-    resolve_zenodo_version = function(doi, version, sandbox) {
-      if (version == "invalid_version") {
-        stop("Version not found")
-      }
-      return("1.0.0")
-    },
-    .package = "openesm"
-  )
-  
-  # trigger the resolve_zenodo_version error
-  expect_error(
-    download_metadata_from_zenodo(version = "invalid_version", dest_dir = temp_dir),
-    "Version not found"
-  )
-  
-  unlink(temp_dir, recursive = TRUE)
-})
 

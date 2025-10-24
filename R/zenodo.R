@@ -6,15 +6,15 @@
 #' @param zenodo_doi Character string with the Zenodo concept DOI.
 #' @param version Character string, either "latest" or a specific version tag (e.g., "v1.0.0").
 #' @param sandbox Logical, whether to use Zenodo sandbox.
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.
 #' @return Character string with the resolved version tag.
 #' @keywords internal
 #' @importFrom zen4R get_versions
 #' @importFrom dplyr arrange desc slice pull
 #' @importFrom cli cli_abort cli_alert_warning
 #' @noRd
-resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FALSE) {
+resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FALSE, max_attempts = 15) {
   # retry logic for flaky zenodo api calls
-  max_attempts <- 3
   attempt <- 1
   data_versions <- NULL
   
@@ -67,6 +67,7 @@ resolve_zenodo_version <- function(zenodo_doi, version = "latest", sandbox = FAL
 #' @param version Character string specifying a specific version tag (e.g., "1.0.0")
 #' @param sandbox Logical, whether to use Zenodo sandbox. Default is \code{FALSE}
 #' @param dest_path Character string with destination path. If \code{NULL}, uses filename only
+#' @param max_attempts Integer, maximum number of retry attempts for Zenodo API calls. Default is 15.
 #' @return Character string with path to downloaded file
 #' @keywords internal
 #' @importFrom zen4R get_versions
@@ -77,11 +78,11 @@ download_from_zenodo <- function(zenodo_doi,
                                  author_name,
                                  version,
                                  sandbox = FALSE,
-                                 dest_path = NULL) {
+                                 dest_path = NULL,
+                                 max_attempts = 15) {
 
   # get available versions to find the record ID for the specific version
   # use retry logic for api stability
-  max_attempts <- 3
   attempt <- 1
   data_versions <- NULL
   
@@ -109,7 +110,6 @@ download_from_zenodo <- function(zenodo_doi,
 
   version_match <- data_versions[data_versions$version == version, ]
   if (nrow(version_match) == 0) {
-    # this check is redundant if resolve_zenodo_version is called first, but good for safety
     available_versions <- paste(data_versions$version, collapse = ", ")
     cli::cli_abort("Version {version} not found. Available versions: {available_versions}")
   }
@@ -118,22 +118,18 @@ download_from_zenodo <- function(zenodo_doi,
 
   # extract record ID from DOI and construct filename
   record_id <- sub(".*zenodo\\.", "", specific_version_doi)
-
   filename <- paste0(dataset_id, "_", author_name, "_ts.tsv")
 
-  # construct download URL
   if (isTRUE(sandbox)) {
     download_url <- paste0("https://sandbox.zenodo.org/records/", record_id, "/files/", filename)
   } else {
     download_url <- paste0("https://zenodo.org/records/", record_id, "/files/", filename)
   }
 
-  # Set destination path
   if (is.null(dest_path)) {
     dest_path <- filename
   }
 
-  # download file using the package's standard download utility
   download_with_progress(download_url, dest_path)
 
   return(dest_path)
