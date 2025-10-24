@@ -79,8 +79,6 @@
 #' # Force re-download to get latest version
 #' dataset_fresh <- get_dataset("0001", force_download = TRUE)
 #'
-#' # Download to custom path
-#' dataset_custom <- get_dataset("0001", path = "~/my_data")
 #' }
 #'
 #' @export
@@ -161,6 +159,10 @@ get_dataset <- function(dataset_id,
       version = actual_version
     )
   } else {
+    # ensure custom path directory exists
+    if (!fs::dir_exists(path)) {
+      fs::dir_create(path, recurse = TRUE)
+    }
     local_data_path <- fs::path(path, filename)
   }
   

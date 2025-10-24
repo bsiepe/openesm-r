@@ -19,7 +19,7 @@ Print method for a list of openesm_dataset objects
 }
 \examples{
 \donttest{
-datasets <- get_dataset(c("00011", "00012"))
+datasets <- get_dataset(c("0001", "0002"))
 print(datasets)
 }
 }

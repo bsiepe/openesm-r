@@ -53,7 +53,7 @@ print.openesm_dataset <- function(x, ...) {
 #' @importFrom cli cli_h1 cli_text cli_bullets cli_alert_info cli_div style_bold
 #' @examples
 #' \donttest{
-#' datasets <- get_dataset(c("00011", "00012"))
+#' datasets <- get_dataset(c("0001", "0002"))
 #' print(datasets)
 #' }
 #' @export
