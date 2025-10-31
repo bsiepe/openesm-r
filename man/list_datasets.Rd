@@ -60,7 +60,7 @@ interest before downloading with \code{\link[=get_dataset]{get_dataset()}}.
 }
 \examples{
 \donttest{
-# Get list of all available datasets
+# List all available datasets
 datasets <- list_datasets()
 
 # Force fresh download of index
@@ -71,6 +71,12 @@ datasets_v1 <- list_datasets(metadata_version = "1.0.0")
 
 # Use dataset IDs with get_dataset()
 dataset <- get_dataset(datasets$dataset_id[1])
+
+\dontshow{
+# cleanup
+clear_cache(force = TRUE)
+}
+
 }
 
 }

@@ -98,6 +98,11 @@ dataset_v1 <- get_dataset("0001", metadata_version = "1.0.0")
 # Force re-download to get latest version
 dataset_fresh <- get_dataset("0001", force_download = TRUE)
 
+
+\dontshow{
+# cleanup
+clear_cache(force = TRUE)
+}
 }
 
 }

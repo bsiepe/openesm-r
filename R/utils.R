@@ -7,7 +7,7 @@
 #' @keywords internal
 #' @noRd
 get_cache_dir <- function(type = NULL) {
-  # user cache directory
+  # use tools::R_user_dir for standard R cache location
   base_cache <- tools::R_user_dir("openesm", which = "cache")
   
   # if a type is specified, return the subdirectory

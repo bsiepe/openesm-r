@@ -1,6 +1,6 @@
 Package: openesm
 Title: Access the Open Experience Sampling Method Database
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     c(person("Björn S.", "Siepe", 
     email = "bjoernsiepe@gmail.com", 

@@ -58,7 +58,7 @@
 #'
 #' @examples
 #' \donttest{
-#' # Get list of all available datasets
+#' # List all available datasets
 #' datasets <- list_datasets()
 #' 
 #' # Force fresh download of index
@@ -69,6 +69,12 @@
 #' 
 #' # Use dataset IDs with get_dataset()
 #' dataset <- get_dataset(datasets$dataset_id[1])
+#' 
+#' \dontshow{
+#' # cleanup
+#' clear_cache(force = TRUE)
+#' }
+#' 
 #' }
 #'
 #' @export
